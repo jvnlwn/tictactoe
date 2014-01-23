@@ -1,0 +1,86 @@
+$x-container-base-size: 22px;
+$x-container-additional-size: 120px;
+$x-container-total-size: $x-container-base-size + $x-container-additional-size;
+
+$arrow-base-size: 9px;
+$arrow-additional-size: $x-container-additional-size / 2;
+$arrow-size: $arrow-base-size + $arrow-additional-size;
+$darkgray: lightgray;
+
+
+body {
+    background: #fafafa;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+}
+
+.wrapper {
+    width: 610px;
+    margin: 100px auto 0;
+
+    .square {
+        width: 200px;
+        height: 200px;
+        float: left;
+        background: lightgray;
+        border-right: 5px solid black;
+        border-bottom: 5px solid black;
+
+        &:nth-child(3n+3) {
+            border-right: none;
+        }
+
+        &:nth-child(7), &:nth-child(8), &:nth-child(9) {
+            border-bottom: none;
+        }
+    }
+}
+
+
+.x-container {
+    position: relative;
+    width: $x-container-total-size;
+    height: $x-container-total-size;
+    background: #000;
+    margin: 30px auto 0;
+
+    .x-arrow-up, .x-arrow-down, .x-arrow-left, .x-arrow-right {
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+
+    .x-arrow-up, .x-arrow-down {
+        border-left: $arrow-size solid rgba(0, 0, 0, 0);
+        border-right: $arrow-size solid rgba(0, 0, 0, 0);
+    }
+
+    .x-arrow-left, .x-arrow-right {
+        border-top:    $arrow-size solid rgba(0, 0, 0, 0);
+        border-bottom: $arrow-size solid rgba(0, 0, 0, 0);
+    }
+
+    .x-arrow-up {
+        bottom: 0;
+        left: 2px;
+        border-bottom: $arrow-size solid $darkgray;
+    }
+
+    .x-arrow-down {
+        top: 0;
+        left: 2px;
+        border-top: $arrow-size solid $darkgray;
+    }
+
+    .x-arrow-left {
+        right: 0;
+        top: 2px;
+        border-right: $arrow-size solid $darkgray;
+    }
+
+    .x-arrow-right {
+        left: 0;
+        top: 2px;
+        border-left: $arrow-size solid $darkgray;
+    }
+}
