@@ -5,7 +5,11 @@ $x-container-total-size: $x-container-base-size + $x-container-additional-size;
 $arrow-base-size: 9px;
 $arrow-additional-size: $x-container-additional-size / 2;
 $arrow-size: $arrow-base-size + $arrow-additional-size;
-$darkgray: lightgray;
+
+
+$board-background: rgb(209, 209, 209);
+$board-grid-color: #000;
+$piece-color: #000;
 
 
 body {
@@ -22,9 +26,9 @@ body {
         width: 200px;
         height: 200px;
         float: left;
-        background: lightgray;
-        border-right: 5px solid black;
-        border-bottom: 5px solid black;
+        background: $board-background;
+        border-right: 5px solid $board-grid-color;
+        border-bottom: 5px solid $board-grid-color;
 
         &:nth-child(3n+3) {
             border-right: none;
@@ -34,6 +38,15 @@ body {
             border-bottom: none;
         }
     }
+
+    .o {
+        height: 145px;
+        width: 145px;
+        border-radius: 50%;
+        background: $board-background;
+        border: 3px solid $piece-color;
+        margin: 25px auto 0;
+    }
 }
 
 
@@ -41,7 +54,7 @@ body {
     position: relative;
     width: $x-container-total-size;
     height: $x-container-total-size;
-    background: #000;
+    background: $piece-color;
     margin: 30px auto 0;
 
     .x-arrow-up, .x-arrow-down, .x-arrow-left, .x-arrow-right {
@@ -63,24 +76,24 @@ body {
     .x-arrow-up {
         bottom: 0;
         left: 2px;
-        border-bottom: $arrow-size solid $darkgray;
+        border-bottom: $arrow-size solid $board-background;
     }
 
     .x-arrow-down {
         top: 0;
         left: 2px;
-        border-top: $arrow-size solid $darkgray;
+        border-top: $arrow-size solid $board-background;
     }
 
     .x-arrow-left {
         right: 0;
         top: 2px;
-        border-right: $arrow-size solid $darkgray;
+        border-right: $arrow-size solid $board-background;
     }
 
     .x-arrow-right {
         left: 0;
         top: 2px;
-        border-left: $arrow-size solid $darkgray;
+        border-left: $arrow-size solid $board-background;
     }
 }
