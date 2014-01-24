@@ -1,41 +1,63 @@
-var tic = {
-
-	threeInARow: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]]
-
-}
-
-
-
-
-
-
-
+var tic = setup();
 
 $(function() {
-    chooseSquare();
     // verifyAllThrees('x')
+    var emptySquares = squareTaken();
+    chooseSquare(emptySquares);
 
 });
 
-function chooseSquare() {
+function setup() {
+	return {
+		emptySquares: [1,2,3,4,5,6,7,8,9],
+
+		setsOfThree: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
+
+		turn: turnOrder()
+	}
+}
+
+function turnOrder() {
+	var turnOrder = 0;
+
+	return {
+		increment: function() {
+			turnOrder += 1;
+		},
+
+		checkTurn: function() {
+			return turnOrder;
+		}
+	}
+}
+
+
+function squareTaken() {
+	var emptySquares = tic.emptySquares.slice();
+
+	return function(square) {
+		var index = emptySquares.indexOf(square);
+
+		if (index > -1) {
+			emptySquares.splice(index, 1);
+			return true;
+		}
+		return false;
+	}
+}
+
+function chooseSquare(fun) {
 	$('.square').click(function() {	
 
-		var squareTaken = $(this).children().length > 0;
+		var square = parseInt($(this).attr('id'));
 
-		if (!squareTaken) {
+		if (fun(square)) {
 			var template = _.template($('#x').text());
 			$(this).append(template())	
 		}
+
+		checkForThree(tic.setsOfThree, 0, 0, 'x')
 	})
-}
-
-function verifyAllThrees(piece) {
-	var bumpSet = runEachSet(tic.threeInARow, displaySet);
-
-	setInterval(function() {
-    	bumpSet(piece)
-    	checkForThree(tic.threeInARow, 0, 0, piece)
-    },1500)
 }
 
 function checkForThree(allSets, set, order, piece) {
@@ -61,11 +83,18 @@ function checkForThree(allSets, set, order, piece) {
 }
 
 
-// functions just for checking tic.threeInARow array
-
-// example: 
-// var bumpSet = runEachSet(tic.threeInARow, displaySet)
+// functions just for checking tic.setsOfThree array -> example:
+// var bumpSet = runEachSet(tic.setsOfThree, displaySet)
 // bumpSet('o')
+
+function verifyAllThrees(piece) {
+	var bumpSet = runEachSet(tic.setsOfThree, displaySet);
+
+	setInterval(function() {
+    	bumpSet(piece)
+    	checkForThree(tic.setsOfThree, 0, 0, piece)
+    },1500)
+}
 
 function runEachSet(allSets, fun) {
 	var i = 0;
