@@ -20,7 +20,7 @@ body {
 
 .wrapper {
     width: 610px;
-    margin: 100px auto 0;
+    margin: 0 auto;
 
     .square {
         width: 200px;
@@ -46,6 +46,27 @@ body {
         background: $board-background;
         border: 3px solid $piece-color;
         margin: 25px auto 0;
+    }
+
+    .winner {
+        height: 50px;
+        line-height: 50px;
+        padding: 20px 0;
+        text-align: center;
+        font-size: 34px;
+    }
+
+    .new-game {
+        color: #FFF;
+        font-size: 18px;
+        padding: 10px 15px;
+        background: rgb(93, 119, 218);
+        display: inline-block;
+        border-radius: 4px;
+        text-shadow: 1px 1px rgb(60, 60, 148);
+        border: 3px solid rgb(60, 60, 148);
+        margin-top: 20px;
+        cursor: pointer;
     }
 }
 

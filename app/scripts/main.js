@@ -2,19 +2,36 @@ var tic = setup();
 
 $(function() {
     // verifyAllThrees('x')
-    chooseSquare(tic.emptySquares.checkSquare);
-
+    startNewGame()
 });
+
+function startNewGame() {
+	$('.new-game').click(function() {
+		console.log('hey yo')
+		tic = $.extend(tic, tic.newGame())
+		$('.square').html('');
+		chooseSquare(tic.emptySquares.checkSquare);
+	})
+
+	$('.new-game').click();
+}
 
 function setup() {
 	return {
-		emptySquares: squareTaken(),
+
+		newGame: function() {
+			return {
+				emptySquares: squareTaken(),
+				turn:         turnOrder(),
+				gameOver:     false
+			}
+		},
 
 		setsOfThree: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
 
-		turn: turnOrder(),
+		winningSequencesFirstPlayer: [],
 
-		gameOver: false
+		winningSequencesSecondPlayer: []
 	}
 }
 
@@ -34,7 +51,6 @@ function turnOrder() {
 
 function squareTaken() {
 	var emptySquares = [1,2,3,4,5,6,7,8,9];
-	// var emptySquares = tic.emptySquares.slice();
 
 	return {
 		checkSquare: function(square) {
@@ -55,18 +71,23 @@ function squareTaken() {
 }
 
 function chooseSquare(fun) {
+	// gotta unbind because must recall this function in order to reset the fun value. Otherwise inaccurate emptySquares array
+	$('.square').unbind('click');
+
 	$('.square').click(function() {	
+		console.log('you be clickin')
 
 		var square = parseInt($(this).attr('id'));
 
 		if (fun(square) && !tic.gameOver && tic.turn.checkTurn() % 2 === 0) {
-			var template = _.template($('#x').text());
-			$(this).append(template())
+			var template = determineTemplate('x')
+			appendPiece('#' + square, template())
 
 			tic.turn.increment()
 
 			if (checkForThree(tic.setsOfThree, 0, 0, 'x')) {
 				tic.gameOver = true;
+				$('.winner').text('X Wins!')
 			} else {
 				aiRandom();
 			}
@@ -86,6 +107,7 @@ function aiRandom() {
 
 	if (checkForThree(tic.setsOfThree, 0, 0, 'o')) {
 		tic.gameOver = true;
+		$('.winner').text('O Wins!')
 	}
 }
 
