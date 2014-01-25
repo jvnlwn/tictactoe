@@ -2,18 +2,19 @@ var tic = setup();
 
 $(function() {
     // verifyAllThrees('x')
-    var emptySquares = squareTaken();
-    chooseSquare(emptySquares);
+    chooseSquare(tic.emptySquares.checkSquare);
 
 });
 
 function setup() {
 	return {
-		emptySquares: [1,2,3,4,5,6,7,8,9],
+		emptySquares: squareTaken(),
 
 		setsOfThree: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
 
-		turn: turnOrder()
+		turn: turnOrder(),
+
+		gameOver: false
 	}
 }
 
@@ -31,19 +32,26 @@ function turnOrder() {
 	}
 }
 
-
 function squareTaken() {
-	var emptySquares = tic.emptySquares.slice();
+	var emptySquares = [1,2,3,4,5,6,7,8,9];
+	// var emptySquares = tic.emptySquares.slice();
 
-	return function(square) {
-		var index = emptySquares.indexOf(square);
+	return {
+		checkSquare: function(square) {
+			console.log('this is what the function thinks emptySquares are: ', emptySquares)
+			var index = emptySquares.indexOf(square);
 
-		if (index > -1) {
-			emptySquares.splice(index, 1);
-			return true;
+			if (index > -1) {
+				emptySquares.splice(index, 1);
+				return true;
+			}
+			return false;
+		},
+
+		checkEmpty: function() {
+			return emptySquares;
 		}
-		return false;
-	}
+ 	}
 }
 
 function chooseSquare(fun) {
@@ -51,13 +59,34 @@ function chooseSquare(fun) {
 
 		var square = parseInt($(this).attr('id'));
 
-		if (fun(square)) {
+		if (fun(square) && !tic.gameOver && tic.turn.checkTurn() % 2 === 0) {
 			var template = _.template($('#x').text());
-			$(this).append(template())	
+			$(this).append(template())
+
+			tic.turn.increment()
+
+			if (checkForThree(tic.setsOfThree, 0, 0, 'x')) {
+				tic.gameOver = true;
+			} else {
+				aiRandom();
+			}
 		}
 
-		checkForThree(tic.setsOfThree, 0, 0, 'x')
 	})
+}
+
+function aiRandom() {
+	var emptySquares = tic.emptySquares.checkEmpty().slice();
+	var choice = Math.floor(Math.random() * (emptySquares.length));
+	var square = emptySquares[choice];	
+
+	appendPiece('#' + square, determineTemplate('o'));
+	tic.emptySquares.checkSquare(square);
+	tic.turn.increment();
+
+	if (checkForThree(tic.setsOfThree, 0, 0, 'o')) {
+		tic.gameOver = true;
+	}
 }
 
 function checkForThree(allSets, set, order, piece) {
