@@ -2,15 +2,22 @@ var tic = setup();
 
 $(function() {
     // verifyAllThrees('x')
+    chooseSquare();
     startNewGame()
 });
 
 function startNewGame() {
 	$('.new-game').click(function() {
-		console.log('hey yo')
-		tic = $.extend(tic, tic.newGame())
+		tic = $.extend(tic, tic.newGame());
+
 		$('.square').html('');
-		chooseSquare(tic.emptySquares.checkSquare);
+		$('.winner').html('');
+
+		tic.player.switchOrder();
+
+		if(tic.player.checkPlayer() === 'c') {
+			aiRandom();
+		}
 	})
 
 	$('.new-game').click();
@@ -27,11 +34,33 @@ function setup() {
 			}
 		},
 
+		player: playerOrder(),
+
 		setsOfThree: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
 
 		winningSequencesFirstPlayer: [],
 
 		winningSequencesSecondPlayer: []
+	}
+}
+
+// begin
+// begin
+// begin
+// begin me them closures for setup
+
+function playerOrder() {
+	// playerOrder will be switched at the very beginning, so computer is set to first position initially
+	var playerOrder = ['c', 'h']
+
+	return {
+		switchOrder: function() {
+			playerOrder = playerOrder.reverse();
+		},
+
+		checkPlayer: function() {
+			return playerOrder[0];
+		}
 	}
 }
 
@@ -70,16 +99,18 @@ function squareTaken() {
  	}
 }
 
-function chooseSquare(fun) {
-	// gotta unbind because must recall this function in order to reset the fun value. Otherwise inaccurate emptySquares array
-	$('.square').unbind('click');
+// end me them closures
+// end
+// end
+// end
+
+function chooseSquare() {
 
 	$('.square').click(function() {	
-		console.log('you be clickin')
 
 		var square = parseInt($(this).attr('id'));
 
-		if (fun(square) && !tic.gameOver && tic.turn.checkTurn() % 2 === 0) {
+		if (tic.emptySquares.checkSquare(square) && !tic.gameOver && (tic.turn.checkTurn() % 2 === 0 && tic.player.checkPlayer() === 'h') || (tic.turn.checkTurn() % 2 !== 0 && tic.player.checkPlayer() !== 'h')) {
 			var template = determineTemplate('x')
 			appendPiece('#' + square, template())
 
