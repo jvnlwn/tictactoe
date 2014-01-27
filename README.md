@@ -7,6 +7,6 @@ The computer will "learn" to play tictactoe against a human opponent based on ho
 
 The computer's learning ability will be sped up by matching related sequences. By related, I mean, exact replications that only differ by rotation or orientation. A top corner square is the same as a bottom corner square. A sequence that begins in a corner square can be initialized in any of the four corners. So, when the computer learns a winning sequence that begins in a corner square, it has now learned 4 winning sequences that are rotationally related and also 4 winning sequences that are orientationally related, since one side of the board is nearly an exact mirror of the other side.
 
-The computer will also be blessed with the ability to win and block. Win if possible by makeing two in a row, three. Block if possible when human is one away from three in a row. 
+The computer will also be blessed with the abilities to win and block. Win if possible by makeing two in a row, three. Block if possible by thwarting person's looming three in a row.
 
 Eventually the computer will become unbeatable.
