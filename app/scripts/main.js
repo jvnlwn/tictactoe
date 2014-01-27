@@ -21,7 +21,7 @@ function startNewGame() {
 
 		tic.player.switchOrder();
 
-		if(tic.player.checkPlayer() === 'c') {
+		if(tic.player.check() === 'c') {
 			// computer is first player, therefore starts game
 			aiMove();
 		}
@@ -42,6 +42,8 @@ function setup() {
 				// turn:         turnOrder(),
 				sequence:     sequence(),
 				rotation:     rotation(initiateRotation),
+				x:            recordTakenSquares(),
+				o:            recordTakenSquares(),
 				gameOver:     false
 			}
 		},
@@ -73,7 +75,7 @@ function emptySquares() {
 			return false;
 		},
 
-		removeSquare: function(square) {
+		remove: function(square) {
 			var index = emptySquares.indexOf(square);
 			emptySquares.splice(index, 1);
 		},
@@ -94,7 +96,7 @@ function emptySquares() {
 
 // 		checkTurn: function(player) {
 // 			// true means human had first move. false means computer had first move
-// 			return (turnOrder % 2 === 0 && tic.player.checkPlayer() === player) || (turnOrder % 2 !== 0 && tic.player.checkPlayer() !== player)
+// 			return (turnOrder % 2 === 0 && tic.player.check() === player) || (turnOrder % 2 !== 0 && tic.player.check() !== player)
 // 		}
 // 	}
 // }
@@ -107,7 +109,7 @@ function sequence() {
 			sequence.push(square)
 		},
 
-		checkSequence: function() {
+		check: function() {
 			return sequence;
 		}
 	}
@@ -122,7 +124,7 @@ function playerOrder() {
 			playerOrder = playerOrder.reverse();
 		},
 
-		checkPlayer: function() {
+		check: function() {
 			return playerOrder[0];
 		}
 	}
@@ -151,7 +153,7 @@ function rotation(pred) {
 	]
 
 	return {
-		setRotation: function(square) {
+		set: function(square) {
 			if (pred()) {
 				console.log('we be jamin')
 				rotation = _.find(rotations, function(o){return o.squares.indexOf(square) > -1}).rotation
@@ -159,8 +161,22 @@ function rotation(pred) {
 
 		},
 
-		checkRotation: function() {
+		check: function() {
 			return rotation;
+		}
+	}
+}
+
+function recordTakenSquares() {
+	var takenSquares = [];
+
+	return {
+		add: function(square) {
+			takenSquares.push(square)
+		},
+
+		check: function() {
+			return takenSquares;
 		}
 	}
 }
@@ -199,7 +215,9 @@ function chooseSquare() {
 // begin AI functionality
 
 function aiMove() {
-	var square = aiRandom();
+	var forced = aiForced('o').concat(aiForced('x'))
+
+	var square = forced.length > 0 ? forced[0] : aiRandom();
 	processMove(square, 'o');
 }
 
@@ -211,6 +229,19 @@ function aiRandom() {
 	return square;
 }
 
+function aiForced(piece) {
+	var forced = [];
+
+	_.each(tic.setsOfThree, function(set){
+		var diff =  _.difference(set, tic[piece].check())
+		if (diff.length === 1 && tic.emptySquares.checkEmpty().indexOf(diff[0]) > -1) {
+			forced.push(diff[0])
+		}
+	})
+
+	return forced;
+}
+
 // end AI functionality
 // end
 // end
@@ -219,18 +250,19 @@ function aiRandom() {
 // processing to be performed after square is chosen by human or computer
 function processMove(square, piece) {
 	appendPiece('#' + square, determineTemplate(piece));
-	tic.emptySquares.removeSquare(square);
+	tic.emptySquares.remove(square);
 	// tic.turn.increment()
 	tic.sequence.add(square)
-	tic.rotation.setRotation(square)
+	tic.rotation.set(square)
+	tic[piece].add(square)
 
-	console.log('rotation: ', tic.rotation.checkRotation())
+	console.log('rotation: ', tic.rotation.check())
 
 	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
 		tic.gameOver = true;
 		$('.winner').text(piece.toUpperCase() + ' Wins!')
 	}
-	// console.log('the sequence is: ', tic.sequence.checkSequence())
+	// console.log('the sequence is: ', tic.sequence.check())
 }
 
 function checkForThree(allSets, set, order, piece) {
@@ -256,7 +288,7 @@ function checkForThree(allSets, set, order, piece) {
 }
 
 function initiateRotation() {
-	var sequence = tic.sequence.checkSequence()
+	var sequence = tic.sequence.check()
 	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
 }
 
