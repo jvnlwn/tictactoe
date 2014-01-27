@@ -4,7 +4,7 @@ $(function() {
     // verifyAllThrees('x')
 
     // set click events for person
-    chooseSquare();
+    huMove();
 
     // sets/resets data from one game to the next
     startNewGame()
@@ -39,8 +39,8 @@ function setup() {
 		newGame: function() {
 			return {
 				emptySquares: emptySquares(),
-				// turn:         turnOrder(),
-				sequence:     sequence(),
+				turn:         turnOrder(),
+				sequence:     currentSequence(),
 				rotation:     rotation(initiateRotation),
 				x:            recordTakenSquares(),
 				o:            recordTakenSquares(),
@@ -49,13 +49,10 @@ function setup() {
 		},
 
 		// all other properties must not be reset
-		player: playerOrder(),
-
-		setsOfThree: [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
-
-		winningSequencesFirstPlayer: [],
-
-		winningSequencesSecondPlayer: []
+		setsOfThree:           [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
+		player:                playerOrder(),
+		firstPlayerSequences:  allSequences(),
+		secondPlayerSequences: allSequences(),
 	}
 }
 
@@ -66,7 +63,6 @@ function emptySquares() {
 
 	return {
 		checkSquare: function(square) {
-			// console.log('this is what the function thinks emptySquares are: ', emptySquares)
 			var index = emptySquares.indexOf(square);
 
 			if (index > -1) {
@@ -86,22 +82,22 @@ function emptySquares() {
  	}
 }
 
-// function turnOrder() {
-// 	var turnOrder = 0;
+function turnOrder() {
+	var turnOrder = 0;
 
-// 	return {
-// 		increment: function() {
-// 			turnOrder += 1;
-// 		},
+	return {
+		increment: function() {
+			turnOrder += 1;
+		},
 
-// 		checkTurn: function(player) {
-// 			// true means human had first move. false means computer had first move
-// 			return (turnOrder % 2 === 0 && tic.player.check() === player) || (turnOrder % 2 !== 0 && tic.player.check() !== player)
-// 		}
-// 	}
-// }
+		check: function(player) {
+			// true for first player
+			return turnOrder % 2 === 0;
+		}
+	}
+}
 
-function sequence() {
+function currentSequence() {
 	var sequence = [];
 
 	return {
@@ -114,6 +110,47 @@ function sequence() {
 		}
 	}
 }
+
+function allSequences(player) {
+	var wins = [];
+	var draws = [];
+
+	function findMatch(list, sequence, index, current, length) {
+		if (index > length) {
+			return list;
+		}
+
+		_.each(list, function(item) {
+			if (item.sequence[index] === sequence[index]) {
+				current.push(item)
+			}
+		})
+
+		return findMatch(current, sequence, index + 1, [], length)
+	}
+
+	return {
+		add: function(list, item) {
+			var sequence = findMatch(list, item, 0, [], item.length)
+
+			if (sequence.length > 0) {
+				// should only ever be one object inside sequence. All duplicate sequences have a frequency property that is incremented on each occurence
+				sequence[0].frequency += 1;
+			} else {
+				list.push({
+					sequence:  item,
+					frequency: 1
+				})
+			}
+		},
+
+		check: function(sequence) {
+			return sequence === 'wins' ? wins : draws;
+		}
+	}
+}
+
+
 
 function playerOrder() {
 	// playerOrder will be switched at the very beginning, so computer is set to first position initially
@@ -188,7 +225,7 @@ function recordTakenSquares() {
 
 // begin Human functionality
 
-function chooseSquare() {
+function huMove() {
 
 	$('.square').click(function() {	
 
@@ -217,10 +254,12 @@ function chooseSquare() {
 function aiMove() {
 	var forced = aiForced('o').concat(aiForced('x'))
 
-	var square = forced.length > 0 ? forced[0] : aiRandom();
+	// if forced contains any squares, if a win is forced, a winning square will be at index 0, otherwise a blocking square will be at index 0. (Win takes priority over block)
+	var square = forced[0] || aiRandom();
 	processMove(square, 'o');
 }
 
+// choose random square since computer cannont make intelligent move
 function aiRandom() {
 	var emptySquares = tic.emptySquares.checkEmpty().slice();
 	var choice = Math.floor(Math.random() * (emptySquares.length));
@@ -229,6 +268,7 @@ function aiRandom() {
 	return square;
 }
 
+// a forced block or win
 function aiForced(piece) {
 	var forced = [];
 
@@ -251,19 +291,43 @@ function aiForced(piece) {
 function processMove(square, piece) {
 	appendPiece('#' + square, determineTemplate(piece));
 	tic.emptySquares.remove(square);
-	// tic.turn.increment()
 	tic.sequence.add(square)
 	tic.rotation.set(square)
 	tic[piece].add(square)
 
 	console.log('rotation: ', tic.rotation.check())
 
-	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
-		tic.gameOver = true;
-		$('.winner').text(piece.toUpperCase() + ' Wins!')
-	}
-	// console.log('the sequence is: ', tic.sequence.check())
+	gameOver(piece)
+
+	tic.turn.increment()
 }
+
+// game over
+
+function gameOver(piece) {
+	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
+		$('.winner').text(piece.toUpperCase() + ' Wins!')
+
+		record('wins');
+
+	} else if (tic.emptySquares.checkEmpty().length === 0) {
+		$('.winner').text('Draw!')
+
+		record('draws');
+	}	
+}
+
+function record(list) {
+	tic.gameOver = true;
+
+	if (tic.turn.check()) {
+		tic.firstPlayerSequences.add(tic.firstPlayerSequences.check(list), tic.sequence.check())
+	} else {
+		tic.secondPlayerSequences.add(tic.secondPlayerSequences.check(list), tic.sequence.check())
+	}
+}
+
+// game over ^^
 
 function checkForThree(allSets, set, order, piece) {
 
@@ -291,7 +355,6 @@ function initiateRotation() {
 	var sequence = tic.sequence.check()
 	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
 }
-
 
 // functions just for checking tic.setsOfThree array -> example:
 // var bumpSet = runEachSet(tic.setsOfThree, displaySet)
