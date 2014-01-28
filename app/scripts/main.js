@@ -44,6 +44,7 @@ function setup() {
 				rotation:     rotation(initiateRotation),
 				x:            recordTakenSquares(),
 				o:            recordTakenSquares(),
+				// blah:         tic.firstPlayerSequences.check('wins'),
 				gameOver:     false
 			}
 		},
@@ -115,20 +116,6 @@ function allSequences(player) {
 	var wins = [];
 	var draws = [];
 
-	function findMatch(list, sequence, index, current, length) {
-		if (index > length) {
-			return list;
-		}
-
-		_.each(list, function(item) {
-			if (item.sequence[index] === sequence[index]) {
-				current.push(item)
-			}
-		})
-
-		return findMatch(current, sequence, index + 1, [], length)
-	}
-
 	return {
 		add: function(list, item) {
 			var sequence = findMatch(list, item, 0, [], item.length)
@@ -144,12 +131,31 @@ function allSequences(player) {
 			}
 		},
 
-		check: function(sequence) {
-			return sequence === 'wins' ? wins : draws;
+		arrange: function(list) {
+			list = list.sort(function(a, b) {
+				return b.frequency - a.frequency;
+			})
+		},
+
+		check: function(list) {
+			return list === 'wins' ? wins : draws;
 		}
 	}
 }
 
+function findMatch(list, sequence, index, current, length) {
+	if (index >= length) {
+		return list;
+	}
+
+	_.each(list, function(item) {
+		if (item.sequence[index] === sequence[index]) {
+			current.push(item)
+		}
+	})
+
+	return findMatch(current, sequence, index + 1, [], length)
+}
 
 
 function playerOrder() {
@@ -192,7 +198,6 @@ function rotation(pred) {
 	return {
 		set: function(square) {
 			if (pred()) {
-				console.log('we be jamin')
 				rotation = _.find(rotations, function(o){return o.squares.indexOf(square) > -1}).rotation
 			}
 
@@ -233,14 +238,13 @@ function huMove() {
 
 		if (tic.emptySquares.checkSquare(square) && !tic.gameOver) {
 
-			processMove(square, 'x')
+			processMove(square, 'x');
 
 			// if game isn't over, have computer move
 			if (!tic.gameOver) {
 				aiMove();
 			}
 		}
-
 	})
 }
 
@@ -317,13 +321,14 @@ function gameOver(piece) {
 	}	
 }
 
+// records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
 function record(list) {
 	tic.gameOver = true;
 
 	if (tic.turn.check()) {
-		tic.firstPlayerSequences.add(tic.firstPlayerSequences.check(list), tic.sequence.check())
+		tic.firstPlayerSequences.add(tic.firstPlayerSequences.check(list), convertSequence(tic.sequence.check(), true))
 	} else {
-		tic.secondPlayerSequences.add(tic.secondPlayerSequences.check(list), tic.sequence.check())
+		tic.secondPlayerSequences.add(tic.secondPlayerSequences.check(list), convertSequence(tic.sequence.check(), true))
 	}
 }
 
@@ -354,6 +359,16 @@ function checkForThree(allSets, set, order, piece) {
 function initiateRotation() {
 	var sequence = tic.sequence.check()
 	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
+}
+
+// takes a sequence and rotates it'
+function convertSequence(sequence, direction) {
+	var conversion = [];
+
+	_.each(sequence, function(square) {
+		conversion.push(direction ? tic.rotation.check().indexOf(square) + 1 : tic.rotation.check()[square - 1])
+	})
+	return conversion;
 }
 
 // functions just for checking tic.setsOfThree array -> example:
