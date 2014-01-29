@@ -304,21 +304,17 @@ function huMove() {
 
 function aiMove() {
 	var forced = aiForced('o').concat(aiForced('x'))
-	var wins = aiWins();
-	var winningMove = (wins[0] && wins[0].sequence[tic.turn.check()])
-	console.log('winning move: ', winningMove)
 
 	// if forced contains any squares, if a win is forced, a winning square will be at index 0, otherwise a blocking square will be at index 0. (Win takes priority over block)
-	// var square = forced[0] || (wins[0] && wins[0].sequence[0]) || aiRandom();
-	var square = forced[0] || winningMove || aiRandom();
+	var square = forced[0] || aiTactical() || aiRandom(tic.emptySquares.checkEmpty().slice());
+	console.log('ai chose: ', square)
 	processMove(square, 'o');
 }
 
 // choose random square since computer cannont make intelligent move
-function aiRandom() {
-	var emptySquares = tic.emptySquares.checkEmpty().slice();
-	var choice = Math.floor(Math.random() * (emptySquares.length));
-	var square = emptySquares[choice];
+function aiRandom(squares) {
+	var choice = Math.floor(Math.random() * (squares.length));
+	var square = squares[choice];
 
 	return square;
 }
@@ -337,27 +333,40 @@ function aiForced(piece) {
 	return forced;
 }
 
-// function aiTactical() {
-// 	var wins = tic.firstPlayerSequences.check('wins');
-// 	var loss = tic.secondPlayerSequences.check('wins');
+function aiTactical() {
+	var wins = tic.player.check() === 'c' ? tic.firstPlayerSequences.check('wins') : tic.secondPlayerSequences.check('wins');
+	var loss = tic.player.check() === 'h' ? tic.firstPlayerSequences.check('wins') : tic.secondPlayerSequences.check('wins');
+	var matches = [];
+	var squares = [];
 
-// 	findMatch(wins, tic.sequence.check(), 0, [], tic.sequence.length);
+	var convertedSequence = convertSequence(tic.sequence.check(), true);
+	var length = tic.sequence.check().length;
 
-// 	if (tic.emptySquares.checkEmpty().length === 9) {
-// 		if (wins.length > 0) {
-// 			return wins[0].sequence[0];
-// 		}
-// 	}
-// }
+	// if there are any winning sequences, check if sequence matches any winning sequnces
+	matches = wins.length > 0 ? findMatch(wins, convertedSequence, 0, [], length) : [];
 
-function aiWins() {
-	var wins = tic.firstPlayerSequences.check('wins');
-	console.log('wins: ', wins)
-	console.log('sequence: ', tic.sequence.check())
-	console.log('converted sequence: ', convertSequence(tic.sequence.check() , true))
-	var matches = findMatch(wins, convertSequence(tic.sequence.check(), true), 0, [], tic.sequence.check().length);
-	console.log('matches: ', matches)
-	return matches
+	if (matches[0]) {
+		return matches[0].sequence[tic.turn.check()]
+	}
+
+	matches = loss.length > 0 ? findMatch(loss, convertedSequence, 0, [], length) : [];
+
+	if (matches[0]) {
+		_.each(matches, function(match) {
+			squares.push(match.sequence[tic.turn.check()])
+		})
+		console.log('we\'ve found some baddies ', squares)
+		// this subtracts the bad squares from the remaining empty and lets ai choose a random safe square
+		squares = _.union(squares, _.map(squares, function(square) {
+			return handleOrientaion(tic.sequence.check()[0], square)
+		}))
+		console.log('now we got there counterparts ', squares)
+		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), squares))
+	}
+
+	// no matches, empty array
+	return false;
+
 }
 
 // end AI functionality

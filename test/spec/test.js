@@ -31,6 +31,8 @@
     	it('should recognize a sequence that is orientationally same as another sequence', function(done) {
     		// [1,3]
     		clickSquares([3])
+            // human takes square 3 which is orientationally the same as the first sequence.
+            // ai should recognize this and take square 9.
 
     		setTimeout(function() {
 	    		expect(tic.sequence.check()[2]).to.equal(9)
