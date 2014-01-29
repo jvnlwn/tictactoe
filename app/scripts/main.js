@@ -38,14 +38,15 @@ function setup() {
 		// all properties in object returned from newGame must be reset upon each new game
 		newGame: function() {
 			return {
-				emptySquares: emptySquares(),
-				turn:         turnOrder(),
-				sequence:     currentSequence(),
-				rotation:     rotation(initiateRotation),
-				x:            recordTakenSquares(),
-				o:            recordTakenSquares(),
-				// blah:         tic.firstPlayerSequences.check('wins'),
-				gameOver:     false
+				emptySquares:  emptySquares(),
+				turn:          turnOrder(),
+				sequence:      currentSequence(),
+				rotation:      rotation(initiateRotation),
+				x:             recordTakenSquares(),
+				o:             recordTakenSquares(),
+				// aiFPSequences: tic.firstPlayerSequences.check('wins'),
+				// aiSPSequences: tic.secondPlayerSequences.check('wins'),
+				gameOver:      false
 			}
 		},
 
@@ -92,8 +93,7 @@ function turnOrder() {
 		},
 
 		check: function(player) {
-			// true for first player
-			return turnOrder % 2 === 0;
+			return turnOrder;
 		}
 	}
 }
@@ -144,15 +144,21 @@ function allSequences(player) {
 }
 
 function findMatch(list, sequence, index, current, length) {
+
+	if (sequence.length === 0 || list.length === 0) {
+		return list;
+	}
+
 	if (index >= length) {
 		return list;
 	}
 
-	console.log('hey wha')
-
 	_.each(list, function(item) {
-		// if (item.sequence[index] === sequence[index]) {
+		console.log('exact:    ',item.sequence[index] + ' ' + sequence[index])
+		console.log('oriented: ',handleOrientaion(item.sequence[0], item.sequence[index]) + ' ' + sequence[index])
+		// if sequences aren't exactly the same, maybe they are a mirror of eachother -> check for orientation
 		if (item.sequence[index] === sequence[index] || handleOrientaion(item.sequence[0], item.sequence[index]) === sequence[index]) {
+
 			current.push(item)
 		}
 	})
@@ -244,6 +250,12 @@ function rotation(pred) {
 	}
 }
 
+// the pred for rotation
+function initiateRotation() {
+	var sequence = tic.sequence.check()
+	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
+}
+
 function recordTakenSquares() {
 	var takenSquares = [];
 
@@ -292,9 +304,13 @@ function huMove() {
 
 function aiMove() {
 	var forced = aiForced('o').concat(aiForced('x'))
+	var wins = aiWins();
+	var winningMove = (wins[0] && wins[0].sequence[tic.turn.check()])
+	console.log('winning move: ', winningMove)
 
 	// if forced contains any squares, if a win is forced, a winning square will be at index 0, otherwise a blocking square will be at index 0. (Win takes priority over block)
-	var square = forced[0] || aiRandom();
+	// var square = forced[0] || (wins[0] && wins[0].sequence[0]) || aiRandom();
+	var square = forced[0] || winningMove || aiRandom();
 	processMove(square, 'o');
 }
 
@@ -319,6 +335,29 @@ function aiForced(piece) {
 	})
 
 	return forced;
+}
+
+// function aiTactical() {
+// 	var wins = tic.firstPlayerSequences.check('wins');
+// 	var loss = tic.secondPlayerSequences.check('wins');
+
+// 	findMatch(wins, tic.sequence.check(), 0, [], tic.sequence.length);
+
+// 	if (tic.emptySquares.checkEmpty().length === 9) {
+// 		if (wins.length > 0) {
+// 			return wins[0].sequence[0];
+// 		}
+// 	}
+// }
+
+function aiWins() {
+	var wins = tic.firstPlayerSequences.check('wins');
+	console.log('wins: ', wins)
+	console.log('sequence: ', tic.sequence.check())
+	console.log('converted sequence: ', convertSequence(tic.sequence.check() , true))
+	var matches = findMatch(wins, convertSequence(tic.sequence.check(), true), 0, [], tic.sequence.check().length);
+	console.log('matches: ', matches)
+	return matches
 }
 
 // end AI functionality
@@ -360,7 +399,7 @@ function gameOver(piece) {
 function record(list) {
 	tic.gameOver = true;
 
-	if (tic.turn.check()) {
+	if (tic.turn.check() % 2 === 0) {
 		tic.firstPlayerSequences.add(tic.firstPlayerSequences.check(list), convertSequence(tic.sequence.check(), true))
 	} else {
 		tic.secondPlayerSequences.add(tic.secondPlayerSequences.check(list), convertSequence(tic.sequence.check(), true))
@@ -389,11 +428,6 @@ function checkForThree(allSets, set, order, piece) {
 	} else {
 		return checkForThree(allSets, set + 1, 0, piece)
 	}
-}
-
-function initiateRotation() {
-	var sequence = tic.sequence.check()
-	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
 }
 
 // takes a sequence and rotates it'
@@ -447,4 +481,9 @@ function determineTemplate(piece) {
 function appendPiece(target, template) {
 	$(target).append(template)
 }
+
+
+
+
+
 
