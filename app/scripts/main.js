@@ -334,10 +334,20 @@ function aiForced(piece) {
 }
 
 function aiTactical() {
-	var wins = tic.player.check() === 'c' ? tic.firstPlayerSequences.check('wins') : tic.secondPlayerSequences.check('wins');
-	var loss = tic.player.check() === 'h' ? tic.firstPlayerSequences.check('wins') : tic.secondPlayerSequences.check('wins');
+	var wins, loss;
 	var matches = [];
 	var squares = [];
+
+	if (tic.player.check() === 'c') {
+		wins = tic.firstPlayerSequences.check('wins');
+		loss = tic.secondPlayerSequences.check('wins');
+	} else {
+		wins = tic.secondPlayerSequences.check('wins');
+		loss = tic.firstPlayerSequences.check('wins');
+	}
+
+	console.log('if we want to win: ', wins)
+	console.log('if we want to avoid losing: ', loss)
 
 	var convertedSequence = convertSequence(tic.sequence.check(), true);
 	var length = tic.sequence.check().length;
@@ -355,13 +365,13 @@ function aiTactical() {
 		_.each(matches, function(match) {
 			squares.push(match.sequence[tic.turn.check()])
 		})
-		console.log('we\'ve found some baddies ', squares)
+		console.log('we\'ve found some baddies ', convertSequence(squares), false)
 		// this subtracts the bad squares from the remaining empty and lets ai choose a random safe square
 		squares = _.union(squares, _.map(squares, function(square) {
 			return handleOrientaion(tic.sequence.check()[0], square)
 		}))
-		console.log('now we got there counterparts ', squares)
-		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), squares))
+		console.log('now we got there counterparts ', convertSequence(squares), false)
+		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertSequence(squares), false))
 	}
 
 	// no matches, empty array
@@ -439,7 +449,7 @@ function checkForThree(allSets, set, order, piece) {
 	}
 }
 
-// takes a sequence and rotates it'
+// takes a sequence and rotates it. Direction can be true or false. True for converting current sequence to standard rotation. False for converting standard-rotated sequence to current rotation.
 function convertSequence(sequence, direction) {
 	var conversion = [];
 
