@@ -1,5 +1,5 @@
 $x-container-base-size: 22px;
-$x-container-additional-size: 120px;
+$x-container-additional-size: 50px;
 $x-container-total-size: $x-container-base-size + $x-container-additional-size;
 
 $arrow-base-size: 9px;
@@ -19,12 +19,12 @@ body {
 }
 
 .wrapper {
-    width: 610px;
+    width: 310px;
     margin: 0 auto;
 
     .square {
-        width: 200px;
-        height: 200px;
+        width: 100px;
+        height: 100px;
         float: left;
         background: $board-background;
         border-right: 5px solid $board-grid-color;
@@ -40,12 +40,12 @@ body {
     }
 
     .o {
-        height: 145px;
-        width: 145px;
+        height: 70px;
+        width: 70px;
         border-radius: 50%;
         background: $board-background;
         border: 3px solid $piece-color;
-        margin: 25px auto 0;
+        margin: 14px auto 0;
     }
 
     .winner {
@@ -76,7 +76,7 @@ body {
     width: $x-container-total-size;
     height: $x-container-total-size;
     background: $piece-color;
-    margin: 30px auto 0;
+    margin: 16px auto 0;
 
     .x-arrow-up, .x-arrow-down, .x-arrow-left, .x-arrow-right {
         position: absolute;
