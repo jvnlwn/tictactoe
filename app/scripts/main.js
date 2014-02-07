@@ -341,17 +341,11 @@ function aiForced(piece) {
 }
 
 function aiTactical() {
-	var wins, loss;
 	var matches = [];
 	var squares = [];
 
-	if (tic.player.check() === 'c') {
-		wins = tic.firstPlayerSequences.check('wins');
-		loss = tic.secondPlayerSequences.check('wins');
-	} else {
-		wins = tic.secondPlayerSequences.check('wins');
-		loss = tic.firstPlayerSequences.check('wins');
-	}
+	var wins = determineSequences().wins
+	var loss = determineSequences().loss
 
 	console.log('if we want to win: ', wins)
 	console.log('if we want to avoid losing: ', loss)
@@ -379,6 +373,7 @@ function aiTactical() {
 
 		console.log('resolved: ', _.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
 
+		// intersects the related square(s) with the currently empty squares to find the availabe winning squares and lets ai choose randomly from that list.
 		return aiRandom(_.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
 	}
 
@@ -394,12 +389,28 @@ function aiTactical() {
 			return handleOrientaion(tic.sequence.check()[0], square)
 		}))
 		console.log('now we got there counterparts ', convertSequence(squares, false))
+
+		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
 		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertSequence(squares), false))
 	}
 
 	// no matches, empty array
 	return false;
 
+}
+
+function determineSequences() {
+	if (tic.player.check() === 'c') {
+		return {
+			wins: tic.firstPlayerSequences.check('wins'),
+			loss: tic.secondPlayerSequences.check('wins')		
+		}
+	} else {
+		return {
+			wins: tic.secondPlayerSequences.check('wins'),
+			loss: tic.firstPlayerSequences.check('wins')	
+		}
+	}
 }
 
 // end AI functionality
