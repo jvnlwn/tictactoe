@@ -41,7 +41,8 @@ function setup() {
 		newGame: function() {
 			return {
 				emptySquares:  emptySquares(),
-				turn:          turnOrder(),
+				turn:          incrementInt(),
+				forced:        incrementInt(),
 				sequence:      currentSequence(),
 				rotation:      rotation(initiateRotation),
 				x:             recordTakenSquares(),
@@ -56,7 +57,7 @@ function setup() {
 		setsOfThree:           [[1,2,3], [1,5,9], [1,4,7], [2,5,8], [3,6,9], [3,5,7], [4,5,6], [7,8,9]],
 		player:                playerOrder(),
 		firstPlayerSequences:  allSequences(),
-		secondPlayerSequences: allSequences(),
+		secondPlayerSequences: allSequences()
 	}
 }
 
@@ -86,16 +87,16 @@ function emptySquares() {
  	}
 }
 
-function turnOrder() {
-	var turnOrder = 0;
+function incrementInt() {
+	var incrementInt = 0;
 
 	return {
 		increment: function() {
-			turnOrder += 1;
+			incrementInt += 1;
 		},
 
-		check: function(player) {
-			return turnOrder;
+		check: function() {
+			return incrementInt;
 		}
 	}
 }
@@ -128,17 +129,18 @@ function allSequences(player) {
 			} else {
 				list.push({
 					sequence:  item,
-					frequency: 1
+					frequency: 1,
+					forced:    tic.forced.check()
 				})
 			}
 		},
 
 		arrange: function() {
 			wins = wins.sort(function(a, b) {
-				return b.frequency - a.frequency;
+				return b.forced - a.forced;
 			})
 			draws = draws.sort(function(a, b) {
-				return b.frequency - a.frequency;
+				return b.forced - a.forced;
 			})
 		},
 
@@ -308,13 +310,13 @@ function huMove() {
 // begin AI functionality
 
 function aiMove() {
-	var forced = aiForced('o').concat(aiForced('x'))
+	var forced = forcedMove('o').concat(forcedMove('x'))
 
-	console.log('FORCED = ', forced)
+	// console.log('FORCED = ', forced)
 
 	// if forced contains any squares, if a win is forced, a winning square will be at index 0, otherwise a blocking square will be at index 0. (Win takes priority over block)
 	var square = forced[0] || aiTactical() || aiRandom(tic.emptySquares.checkEmpty().slice());
-	console.log('processing: ', square)
+	// console.log('processing: ', square)
 	processMove(square, 'o');
 }
 
@@ -327,7 +329,7 @@ function aiRandom(squares) {
 }
 
 // a forced block or win
-function aiForced(piece) {
+function forcedMove(piece) {
 	var forced = [];
 
 	_.each(tic.setsOfThree, function(set){
@@ -337,6 +339,7 @@ function aiForced(piece) {
 		}
 	})
 
+	// console.log('FORCED = ', forced)
 	return forced;
 }
 
@@ -347,8 +350,8 @@ function aiTactical() {
 	var wins = determineSequences().wins
 	var loss = determineSequences().loss
 
-	console.log('if we want to win: ', wins)
-	console.log('if we want to avoid losing: ', loss)
+	// console.log('if we want to win: ', wins)
+	// console.log('if we want to avoid losing: ', loss)
 
 	var convertedSequence = convertSequence(tic.sequence.check(), true);
 	var length = tic.sequence.check().length;
@@ -360,18 +363,18 @@ function aiTactical() {
 		squares.push(matches[0].sequence[tic.turn.check()])
 		// check for first move
 		if (tic.turn.check() === 0) {
-			console.log('fist move your square be: ', squares[0])
-			console.log('choosing from ', squareType(squares[0]))
+			// console.log('fist move your square be: ', squares[0])
+			// console.log('choosing from ', squareType(squares[0]))
 			return aiRandom(squareType(squares[0]));
 		}
 
-		console.log('untouched winner: ', squares)
+		// console.log('untouched winner: ', squares)
 		squares.push(handleOrientaion(tic.sequence.check()[0], squares[0]))
-		console.log('oriented winners: ', squares)
-		console.log('rotated winners:  ', convertSequence(squares, false))
+		// console.log('oriented winners: ', squares)
+		// console.log('rotated winners:  ', convertSequence(squares, false))
 
 
-		console.log('resolved: ', _.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
+		// console.log('resolved: ', _.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
 
 		// intersects the related square(s) with the currently empty squares to find the availabe winning squares and lets ai choose randomly from that list.
 		return aiRandom(_.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
@@ -383,12 +386,12 @@ function aiTactical() {
 		_.each(matches, function(match) {
 			squares.push(match.sequence[tic.turn.check()])
 		})
-		console.log('we\'ve found some baddies ', convertSequence(squares, false))
+		// console.log('we\'ve found some baddies ', convertSequence(squares, false))
 		// this subtracts the bad squares from the remaining empty and lets ai choose a random safe square
 		squares = _.union(squares, _.map(squares, function(square) {
 			return handleOrientaion(tic.sequence.check()[0], square)
 		}))
-		console.log('now we got there counterparts ', convertSequence(squares, false))
+		// console.log('now we got there counterparts ', convertSequence(squares, false))
 
 		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
 		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertSequence(squares), false))
@@ -437,13 +440,23 @@ function gameOver(piece) {
 	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
 		$('.winner').text(piece.toUpperCase() + ' Wins!')
 
-		record('wins');
+		return record('wins');
 
 	} else if (tic.emptySquares.checkEmpty().length === 0) {
 		$('.winner').text('Draw!')
 
-		record('draws');
-	}	
+		return record('draws');
+	}
+	// determine if next move is forced. use total forced moves as a stat for comparing sequence strength. I have a reason for checking both pieces on every turn.
+	var forced = forcedMove(piece).concat(forcedMove(oppositePiece(piece)));
+	if (forced.length > 0) {
+		tic.forced.increment();
+	}
+}
+
+// returns opposite piece
+function oppositePiece(piece) {
+	return piece === 'x' ? 'o' : 'x';
 }
 
 // records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
