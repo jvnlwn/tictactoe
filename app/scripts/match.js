@@ -1,10 +1,6 @@
 function findMatch(list, sequence, index, current, length) {
 
-	if (sequence.length === 0 || list.length === 0) {
-		return list;
-	}
-
-	if (index >= length) {
+	if (sequence.length === 0 || list.length === 0 || index >= length) {
 		return list;
 	}
 
@@ -52,4 +48,25 @@ function handleOrientaion(orientation, square) {
 		indexSecond = o.second.indexOf(square)
 		return indexFirst > -1 ? o.second[indexFirst] : o.first[indexSecond];
 	}
+}
+
+// determine sequence overall occurrences and success of those sequences
+function stats(list, sequence, length, i, addedTo) {
+
+	if (i >= length) {
+		return
+	}
+
+	var matches = findMatch(list, convertSequence(sequence, true), i, [], i + 1);
+
+	var max = _.max(_.map(matches, function(match) {
+		return match.overall[i] + 1;
+	}))
+
+	_.each(matches, function(match) {
+		match.overall[i] = max;
+		match.success[i] = addedTo ? match.success[i] += 1 : match.success[i];
+	})
+
+	return stats(matches, sequence, length, i + 1, addedTo)
 }

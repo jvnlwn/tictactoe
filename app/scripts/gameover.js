@@ -1,31 +1,27 @@
 function gameOver(piece) {
 	// a win?
 	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
-		tic.gameOver.over = true;
-		tic.gameOver.result = 'win';
-		tic.gamesPlayed.increment();
-		$('.winner').text(piece.toUpperCase() + ' Wins!');
+		// tic.gameOver = true;
+		// tic.gamesPlayed.increment();
+		// $('.winner').text(piece.toUpperCase() + ' Wins!');
 
 		// records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
 		if (tic.turn.check() % 2 === 0) {
-			tic.firstPlayerWins.add(convertSequence(tic.sequence.check(), true));
+			// tic.firstPlayerWins.add(convertSequence(tic.sequence.check(), true));
 			// editSuccess();
-			return
+			return endGame(piece + ' win', 'firstPlayerWins');
 		} else {
-			tic.secondPlayerWins.add(convertSequence(tic.sequence.check(), true));
-			// editSuccess();
-			return
+			return endGame(piece + ' win', 'secondPlayerWins');
 		}
 	// a draw?
 	} else if (tic.emptySquares.checkEmpty().length === 0) {
-		tic.gamesPlayed.increment();
-		tic.gameOver.over = true;
-		tic.gameOver.result = 'draw';
-		$('.winner').text('Draw!');
+		return endGame('draw', 'draws');
+		// tic.gamesPlayed.increment();
+		// tic.gameOver = true;
+		// $('.winner').text('Draw!');
 
-		tic.draws.add(convertSequence(tic.sequence.check(), true));
+		// tic.draws.add(convertSequence(tic.sequence.check(), true));
 		// editSuccess();
-		return
 	}
 
 	tic.turn.increment();
@@ -37,10 +33,16 @@ function gameOver(piece) {
 	}
 }
 
-function editSuccess() {
-	tic.firstPlayerWins.success(convertSequence(tic.sequence.check(), true));
-	tic.secondPlayerWins.success(convertSequence(tic.sequence.check(), true));
-	tic.draws.success(convertSequence(tic.sequence.check(), true));
+function endGame(text, sequence) {
+	tic.gameOver = true;
+	tic.gamesPlayed.increment();
+	$('.winner').text(text.toUpperCase() + '!');
+
+	tic[sequence].add(convertSequence(tic.sequence.check(), true));
+
+	tic.firstPlayerWins.success(tic.sequence.check());
+	tic.secondPlayerWins.success(tic.sequence.check());
+	tic.draws.success(tic.sequence.check());
 }
 
 // game over ^^

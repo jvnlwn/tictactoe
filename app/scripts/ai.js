@@ -130,13 +130,16 @@ function compareMatches(matchesFirst, matchesSecond, length, index) {
 
 	// found a match?
 	if (match.length > 0) {
-		console.log('some evil is afoot')
-		// compare the forces of the two sequences
-		if (matchesFirst[index].forced > match[0].forced) {
+		console.log('some evil is afoot:  ', matchesFirst[index].sequence[length] + ' same as ' + match[0].sequence[length])
+		console.log('compare the success: ', matchesFirst[index].success[length] + ' same as ' + match[0].success[length])
+		// compare the success of the two sequences. If not not greater, but even, compare the forces of the two sequences
+		if (matchesFirst[index].success[length] > match[0].success[length] || ((matchesFirst[index].success[length] === match[0].success[length]) && (matchesFirst[index].forced > match[0].forced))) {
+		// if (matchesFirst[index].forced > match[0].forced) {
 			console.log('force is strong in this one: ', matchesFirst[index].forced + ' vs '+ match[0].forced)
 			return true;
 		} else {
-			console.log('weak sauce ', match[0].forced + ' vs '+ matchesFirst[index].forced)
+			// still weak, check next sequence if there is one
+			console.log('weak sauce: ', matchesFirst[index].forced + ' vs '+ match[0].forced)
 			return compareMatches(matchesFirst, matchesSecond, length, index + 1);
 		}
 

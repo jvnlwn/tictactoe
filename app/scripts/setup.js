@@ -17,11 +17,7 @@ function setup() {
 				o:             recordTakenSquares(),
 				// aiFPSequences: tic.firstPlayerWins.check('wins'),
 				// aiSPSequences: tic.secondPlayerWins.check('wins'),
-				// gameOver:      false
-				gameOver: {
-					           over:   false,
-					           result: ''
-				}
+				gameOver:      false
 			}
 		},
 
@@ -108,12 +104,9 @@ function allSequences(player) {
 				sequences.push({
 					sequence:  item,
 					frequency: 1,
-					// forced:    tic.turn.check() - tic.forced.check()
-					// forced:     tic.forced.check() / tic.turn.check()
-					forced:     tic.forced.check(),
-					// success: 0,
-					success: [],
-					overall: overall(tic.sequence.check())
+					forced:    tic.forced.check(),
+					success:   zerosArray(tic.sequence.check()),
+					overall:   zerosArray(tic.sequence.check())
 				})
 			}
 			return this;
@@ -127,22 +120,14 @@ function allSequences(player) {
 			return this;
 		},
 
-		success: function(item) {
-			console.log('checking success')
-			console.log('addedTo is: ', addedTo)
-			successRate(sequences, item, 0, [], item.length, addedTo);
+		success: function(sequence) {
+
+			stats(sequences, sequence, sequence.length, 0, addedTo)
+			
 			addedTo = false;
 
 			return this;
 		},
-
-		// success: function() {
-		// 	_.each(sequences, function(sequence) {
-		// 		sequence.success = sequence.frequency / tic.gamesPlayed.check();
-		// 	});
-
-		// 	return this;
-		// },
 
 		check: function() {
 			return sequences;
@@ -150,8 +135,8 @@ function allSequences(player) {
 	}
 }
 
-// for allSequences
-function overall(sequence) {
+// returns array of zeros
+function zerosArray(sequence) {
 	var array = [];
 	for (var i = 0; i < sequence.length; i++) {
 		array.push(0);

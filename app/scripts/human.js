@@ -4,12 +4,12 @@ function huMove() {
 
 		var square = parseInt($(this).attr('id'));
 
-		if (tic.emptySquares.checkSquare(square) && !tic.gameOver.over) {
+		if (tic.emptySquares.checkSquare(square) && !tic.gameOver) {
 
 			processMove(square, 'x');
 
 			// if game isn't over, have computer move
-			if (!tic.gameOver.over) {
+			if (!tic.gameOver) {
 				aiMove();
 			}
 		}
