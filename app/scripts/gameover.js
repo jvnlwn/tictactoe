@@ -9,9 +9,9 @@ function gameOver(piece) {
 		if (tic.turn.check() % 2 === 0) {
 			// tic.firstPlayerWins.add(convertSequence(tic.sequence.check(), true));
 			// editSuccess();
-			return endGame(piece + ' win', 'firstPlayerWins');
+			return endGame(piece + ' wins', 'firstPlayerWins');
 		} else {
-			return endGame(piece + ' win', 'secondPlayerWins');
+			return endGame(piece + ' wins', 'secondPlayerWins');
 		}
 	// a draw?
 	} else if (tic.emptySquares.checkEmpty().length === 0) {
@@ -40,9 +40,9 @@ function endGame(text, sequence) {
 
 	tic[sequence].add(convertSequence(tic.sequence.check(), true));
 
-	tic.firstPlayerWins.success(tic.sequence.check());
-	tic.secondPlayerWins.success(tic.sequence.check());
-	tic.draws.success(tic.sequence.check());
+	tic.firstPlayerWins.success(tic.sequence.check()).oriented();
+	tic.secondPlayerWins.success(tic.sequence.check()).oriented();
+	tic.draws.success(tic.sequence.check()).oriented();
 }
 
 // game over ^^

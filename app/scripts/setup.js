@@ -13,6 +13,7 @@ function setup() {
 				forced:        incrementInt(),
 				sequence:      currentSequence(),
 				rotation:      rotation(initiateRotation),
+				orientation:   {original: [], oriented: []},
 				x:             recordTakenSquares(),
 				o:             recordTakenSquares(),
 				// aiFPSequences: tic.firstPlayerWins.check('wins'),
@@ -106,7 +107,8 @@ function allSequences(player) {
 					frequency: 1,
 					forced:    tic.forced.check(),
 					success:   zerosArray(tic.sequence.check()),
-					overall:   zerosArray(tic.sequence.check())
+					overall:   zerosArray(tic.sequence.check()),
+					oriented:  false
 				})
 			}
 			return this;
@@ -126,6 +128,13 @@ function allSequences(player) {
 			
 			addedTo = false;
 
+			return this;
+		},
+
+		oriented: function() {
+			_.each(sequences, function(sequence) {
+				sequence.oriented === false;
+			})
 			return this;
 		},
 

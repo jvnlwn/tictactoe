@@ -92,9 +92,9 @@ function aiTactical() {
 
 		var squares = processMatches(matchesLoss)	
 
-		squares = _.union(squares, _.map(squares, function(square) {
-			return handleOrientaion(tic.sequence.check()[0], square)
-		}))
+		// squares = _.union(squares, _.map(squares, function(square) {
+		// 	return handleOrientaion(tic.sequence.check()[0], square)
+		// }))
 
 		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
 		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertSequence(squares), false))
@@ -165,7 +165,15 @@ function processMatches(matches) {
 	console.log('matches after filter: ', matches)
 
 	_.each(matches, function(match) {
-		squares.push(match.sequence[tic.turn.check()])
+		var square = match.sequence[tic.turn.check()]
+
+		console.log('a square: ', square)
+
+		// if this sequence has been oriented during this game, it must be oriented the rest of the game to maintain a true orientation
+		square = !match.oriented ? handleOrientaion(match.sequence[0], square) : square;
+		console.log('square now?: ', square)
+
+		squares.push(square)
 	})
 
 	return squares;
@@ -182,9 +190,9 @@ function processSquares(squares) {
 		return aiRandom(squareType(aiRandom(squares)));
 	}
 
-	squares = _.union(squares, _.map(squares, function(square) {
-		return handleOrientaion(tic.sequence.check()[0], square)
-	}))
+	// squares = _.union(squares, _.map(squares, function(square) {
+	// 	return handleOrientaion(tic.sequence.check()[0], square)
+	// }))
 
 	console.log('squares after orientation: ', squares)
 
