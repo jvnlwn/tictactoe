@@ -1,14 +1,8 @@
 function gameOver(piece) {
 	// a win?
 	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
-		// tic.gameOver = true;
-		// tic.gamesPlayed.increment();
-		// $('.winner').text(piece.toUpperCase() + ' Wins!');
-
 		// records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
 		if (tic.turn.check() % 2 === 0) {
-			// tic.firstPlayerWins.add(convertSequence(tic.sequence.check(), true));
-			// editSuccess();
 			return endGame(piece + ' wins', 'firstPlayerWins');
 		} else {
 			return endGame(piece + ' wins', 'secondPlayerWins');
@@ -16,12 +10,6 @@ function gameOver(piece) {
 	// a draw?
 	} else if (tic.emptySquares.checkEmpty().length === 0) {
 		return endGame('draw', 'draws');
-		// tic.gamesPlayed.increment();
-		// tic.gameOver = true;
-		// $('.winner').text('Draw!');
-
-		// tic.draws.add(convertSequence(tic.sequence.check(), true));
-		// editSuccess();
 	}
 
 	tic.turn.increment();
@@ -34,15 +22,20 @@ function gameOver(piece) {
 }
 
 function endGame(text, sequence) {
+	// game is over
 	tic.gameOver = true;
+	// number of games played ++
 	tic.gamesPlayed.increment();
+	// display winner in DOM
 	$('.winner').text(text.toUpperCase() + '!');
 
+	// adding the final sequence to the appropriate list
 	tic[sequence].add(convertSequence(tic.sequence.check(), true));
 
-	tic.firstPlayerWins.success(tic.sequence.check()).oriented();
-	tic.secondPlayerWins.success(tic.sequence.check()).oriented();
-	tic.draws.success(tic.sequence.check()).oriented();
+	// this ranks the success of each position in each sequence
+	tic.firstPlayerWins.success(tic.sequence.check());
+	tic.secondPlayerWins.success(tic.sequence.check());
+	tic.draws.success(tic.sequence.check());
 }
 
 // game over ^^

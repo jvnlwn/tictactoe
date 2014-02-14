@@ -16,8 +16,6 @@ function setup() {
 				orientation:   {original: [], oriented: []},
 				x:             recordTakenSquares(),
 				o:             recordTakenSquares(),
-				// aiFPSequences: tic.firstPlayerWins.check('wins'),
-				// aiSPSequences: tic.secondPlayerWins.check('wins'),
 				gameOver:      false
 			}
 		},
@@ -103,12 +101,12 @@ function allSequences(player) {
 				sequence[0].frequency += 1;
 			} else {
 				sequences.push({
-					sequence:  item,
-					frequency: 1,
-					forced:    tic.forced.check(),
-					success:   zerosArray(tic.sequence.check()),
-					overall:   zerosArray(tic.sequence.check()),
-					oriented:  false
+					sequence:    item,
+					frequency:   1,
+					forced:      tic.forced.check(),
+					success:     zerosArray(tic.sequence.check()),
+					overall:     zerosArray(tic.sequence.check()),
+					oriented:    { normal: 10, mirror: 10 }
 				})
 			}
 			return this;
@@ -131,9 +129,10 @@ function allSequences(player) {
 			return this;
 		},
 
-		oriented: function() {
+		orient: function() {
 			_.each(sequences, function(sequence) {
-				sequence.oriented === false;
+				sequence.oriented.normal = 10;
+				sequence.oriented.mirror = 10;
 			})
 			return this;
 		},

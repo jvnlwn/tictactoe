@@ -1,23 +1,3 @@
-// function findMatch(list, sequence, index, current, length) {
-
-// 	if (sequence.length === 0 || list.length === 0 || index >= length) {
-// 		return list;
-// 	}
-
-// 	_.each(list, function(item) {
-// 		console.log('');
-// 		console.log('exact:    ',item.sequence[index] + ' ' + sequence[index])
-// 		console.log('oriented: ',handleOrientaion(item.sequence[0], item.sequence[index]) + ' ' + sequence[index])
-// 		// if sequences aren't exactly the same, maybe they are a mirror of eachother -> check for orientation
-// 		if (item.sequence[index] === sequence[index] || handleOrientaion(item.sequence[0], item.sequence[index]) === sequence[index]) {
-
-// 			current.push(item)
-// 		}
-// 	})
-
-// 	return findMatch(current, sequence, index + 1, [], length)
-// }
-
 function findMatch(list, sequence, index, current, length) {
 
 	if (sequence.length === 0 || list.length === 0 || index >= length) {
@@ -25,14 +5,19 @@ function findMatch(list, sequence, index, current, length) {
 	}
 
 	_.each(list, function(item) {
-		console.log('');
 		console.log('exact:    ',item.sequence[index] + ' ' + sequence[index])
 		console.log('oriented: ',handleOrientaion(item.sequence[0], item.sequence[index]) + ' ' + sequence[index])
 		// if sequences aren't exactly the same, maybe they are a mirror of eachother -> check for orientation
-		if (item.sequence[index] === sequence[index] && !item.oriented) {
+		if (item.sequence[index] === sequence[index] && item.oriented.mirror - 1 > index) {
+			// if oriented.normal is 10 (meaning the orientation has not been set)
+			if (item.oriented.normal === 10) {
+				console.log('MIRROR GONE')
+				item.oriented.normal = sequence[index] === handleOrientaion(item.sequence[0], item.sequence[index]) ? 10 : index;
+			}
 			current.push(item)
 		} else if (handleOrientaion(item.sequence[0], item.sequence[index]) === sequence[index]) {
-			item.oriented === true;
+			item.oriented.mirror = item.oriented.mirror === 10 ? index : item.oriented.mirror;
+			console.log('MIRROR IS -> ', item.oriented.mirror);
 			current.push(item)
 		}
 	})

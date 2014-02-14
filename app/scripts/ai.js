@@ -63,8 +63,7 @@ function aiTactical() {
 	// choosing from wins
 	if (matchesWins.length > 0) {
 		console.log('we are choosing a winner')
-		// return chooseWinOrDraw(processMatches(matchesWins, true))
-		return processSquares(processMatches(matchesWins));
+		return processSquares(orientMactches(processMatches(matchesWins)));
 	}
 
 	if (matchesDraws.length > 0 && matchesLoss.length > 0) {
@@ -81,20 +80,15 @@ function aiTactical() {
 	// pursue a draw if draws are still present
 	if (matchesDraws.length > 0) {
 		console.log('we are pursuing a draw')
-
-		// return chooseWinOrDraw(processMatches(matchesDraws))
-		return processSquares(processMatches(matchesDraws));
+		return processSquares(orientMactches(processMatches(matchesDraws)))
 	}
 
 	// if losing sequences still present, avoid these squares
 	if (matchesLoss.length > 0) {
 		console.log('we are avoiding a loser')
 
-		var squares = processMatches(matchesLoss)	
-
-		// squares = _.union(squares, _.map(squares, function(square) {
-		// 	return handleOrientaion(tic.sequence.check()[0], square)
-		// }))
+		// var squares = processMatches(matchesLoss)
+		var squares = orientMactches(processMatches(matchesLoss))
 
 		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
 		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertSequence(squares), false))
@@ -150,33 +144,54 @@ function compareMatches(matchesFirst, matchesSecond, length, index) {
 
 }
 
-// take a set of matches (i.e. wins) and filter out the weaker matches and get the sequential square from each match
+// take a set of matches (i.e. wins or draws -- NOT loss) and filter out the weaker matches
 function processMatches(matches) {
-	var squares = [];
-
-	console.log('squares initially: ', squares)
-	console.log('matches initially: ', matches)
-
 	// get equally strong sequences to choose randomly from
 	matches = _.filter(matches, function(match) {
 		return (match.forced === matches[0].forced)  && (match.frequency >= matches[0].frequency);
 	})
 
+}
+
+// determine which squares to process based on the chosen orientation
+function orientMactches(matches) {
+	var squares = [];
 	console.log('matches after filter: ', matches)
 
 	_.each(matches, function(match) {
-		var square = match.sequence[tic.turn.check()]
+		var index = tic.turn.check()
+		var square = match.sequence[index]
 
-		console.log('a square: ', square)
+		// squares.push(handleOrientaion(match.sequence[0], square))
+		console.log('oriented mirror: ', match.oriented.mirror)
+		console.log('oriented normal: ', match.oriented.normal)
+		console.log('index at:    ', index)
 
-		// if this sequence has been oriented during this game, it must be oriented the rest of the game to maintain a true orientation
-		square = !match.oriented ? handleOrientaion(match.sequence[0], square) : square;
-		console.log('square now?: ', square)
+		// if match.oriented.mirror is less than 10, the orientation for the rest of current game is a mirror of the matching sequence being looped over here (i.e. match)
+		// if match.oriented.normal is less than 10, the orientation for the rest of current game is simply the matching sequence being looped over here, no orientation required (i.e. match)
 
-		squares.push(square)
+		// if this sequence has been oriented(mirrored) during this game, it must be oriented the rest of the game to maintain a true orientation.
+		// otherwise, once the current sequence has "passed the point of no return"--meaning the opportunity to mirror any matching sequence has passed--the current sequence may only match normally oriented sequences (which essentially means a sequence that isn't oriented)
+
+		// in this case, an orientation has not been set yet. Therefore, supply AI with both the normal and mirror orientations to choose from
+		if (match.oriented.mirror > index && match.oriented.normal > index) {
+			console.log('this is when we allow for orientation swap')
+			squares.push(handleOrientaion(match.sequence[0], square), square)
+
+			// this means orientation has been set to mirror and therefore all AI choices must be oriented as a mirror of the matching sequence
+		} else if (match.oriented.mirror < index) {
+			console.log('orientation is permanently mirror')
+			squares.push(handleOrientaion(match.sequence[0], square))
+
+			// this means orientation is not set to mirror but set to normal and all AI choices must be oriented normally, as they appear in the matching sequence
+		} else {
+			squares.push(square)
+		}
+
+		console.log('square(s) to choose from: ', convertSequence(_.uniq(squares), false))
 	})
 
-	return squares;
+	return _.uniq(squares);
 }
 
 // meant for processing wins and draws.
@@ -186,13 +201,9 @@ function processSquares(squares) {
 	// check for first move
 	if (tic.turn.check() === 0) {
 		console.log('first move', squareType(aiRandom(squares)))
-		// choosing random square from squares, get squareType of square(corner/side/middle), choose random corner/side/middle
+		// choosing random square from squares, get squareType of square(corner/side/middle), choose random corner/side/middle . . of course there is no random middle . .
 		return aiRandom(squareType(aiRandom(squares)));
 	}
-
-	// squares = _.union(squares, _.map(squares, function(square) {
-	// 	return handleOrientaion(tic.sequence.check()[0], square)
-	// }))
 
 	console.log('squares after orientation: ', squares)
 

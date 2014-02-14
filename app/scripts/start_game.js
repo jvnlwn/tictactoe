@@ -1,6 +1,4 @@
 $(function() {
-    // verifyAllThrees('x')
-
     // set click events for person
     huMove();
 
@@ -20,17 +18,10 @@ function startNewGame() {
 
 		tic.player.switchOrder();
 
-		// tic.firstPlayerWins.arrange().success(tic.sequence.check());
-		// tic.secondPlayerWins.arrange().success(tic.sequence.check());
-		// tic.draws.arrange().success(tic.sequence.check());
-
-		// tic.firstPlayerWins.arrange().success();
-		// tic.secondPlayerWins.arrange().success();
-		// tic.draws.arrange().success();
-
-		tic.firstPlayerWins.arrange();
-		tic.secondPlayerWins.arrange();
-		tic.draws.arrange();
+		// arrange and orient sequences
+		tic.firstPlayerWins.arrange().orient();
+		tic.secondPlayerWins.arrange().orient();
+		tic.draws.arrange().orient();
 
 		if(tic.player.check() === 'c') {
 			// computer is first player, therefore starts game
