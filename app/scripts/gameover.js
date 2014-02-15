@@ -30,12 +30,12 @@ function endGame(text, sequence) {
 	$('.winner').text(text.toUpperCase() + '!');
 
 	// adding the final sequence to the appropriate list
-	tic[sequence].add(convertSequence(tic.sequence.check(), true));
+	tic[sequence].add(convertSequence(tic.sequence.check(), true)).success(tic.sequence.check());
 
 	// this ranks the success of each position in each sequence
-	tic.firstPlayerWins.success(tic.sequence.check());
-	tic.secondPlayerWins.success(tic.sequence.check());
-	tic.draws.success(tic.sequence.check());
+	// tic.firstPlayerWins.success(tic.sequence.check());
+	// tic.secondPlayerWins.success(tic.sequence.check());
+	// tic.draws.success(tic.sequence.check());
 }
 
 // game over ^^

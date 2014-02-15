@@ -8,11 +8,15 @@ function findMatch(list, sequence, index, current, length) {
 		console.log('exact:    ',item.sequence[index] + ' ' + sequence[index])
 		console.log('oriented: ',handleOrientaion(item.sequence[0], item.sequence[index]) + ' ' + sequence[index])
 		// if sequences aren't exactly the same, maybe they are a mirror of eachother -> check for orientation
-		if (item.sequence[index] === sequence[index] && item.oriented.mirror - 1 > index) {
+		if (item.sequence[index] === sequence[index] && item.oriented.mirror > index) {
 			// if oriented.normal is 10 (meaning the orientation has not been set)
+			var before = item.oriented.normal
 			if (item.oriented.normal === 10) {
-				console.log('MIRROR GONE')
 				item.oriented.normal = sequence[index] === handleOrientaion(item.sequence[0], item.sequence[index]) ? 10 : index;
+			}
+			var after = item.oriented.normal
+			if (before !== after) {
+				console.log('MIRROR GONE')
 			}
 			current.push(item)
 		} else if (handleOrientaion(item.sequence[0], item.sequence[index]) === sequence[index]) {
@@ -53,7 +57,7 @@ function handleOrientaion(orientation, square) {
 }
 
 // determine sequence overall occurrences and success of those sequences
-function stats(list, sequence, length, i, addedTo) {
+function stats(list, sequence, length, i) {
 
 	if (i >= length) {
 		return
@@ -62,13 +66,12 @@ function stats(list, sequence, length, i, addedTo) {
 	var matches = findMatch(list, convertSequence(sequence, true), i, [], i + 1);
 
 	var max = _.max(_.map(matches, function(match) {
-		return match.overall[i] + 1;
+		return match.success[i] + 1;
 	}))
 
 	_.each(matches, function(match) {
-		match.overall[i] = max;
-		match.success[i] = addedTo ? match.success[i] += 1 : match.success[i];
+		match.success[i] = max;
 	})
 
-	return stats(matches, sequence, length, i + 1, addedTo)
+	return stats(matches, sequence, length, i + 1);
 }

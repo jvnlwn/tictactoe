@@ -13,7 +13,6 @@ function setup() {
 				forced:        incrementInt(),
 				sequence:      currentSequence(),
 				rotation:      rotation(initiateRotation),
-				orientation:   {original: [], oriented: []},
 				x:             recordTakenSquares(),
 				o:             recordTakenSquares(),
 				gameOver:      false
@@ -88,7 +87,6 @@ function currentSequence() {
 
 function allSequences(player) {
 	var sequences = [];
-	var addedTo = false;
 
 	return {
 		add: function(item) {
@@ -122,10 +120,8 @@ function allSequences(player) {
 
 		success: function(sequence) {
 
-			stats(sequences, sequence, sequence.length, 0, addedTo)
+			stats(sequences, sequence, sequence.length, 0)
 			
-			addedTo = false;
-
 			return this;
 		},
 
