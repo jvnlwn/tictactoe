@@ -1,4 +1,7 @@
 function findMatch(list, sequence, index, current, length) {
+	// index   = index   || 0;
+	// current = current || [];
+	// length  = length  || sequence.length;
 
 	if (sequence.length === 0 || list.length === 0 || index >= length) {
 		return list;

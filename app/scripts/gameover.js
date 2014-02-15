@@ -8,7 +8,7 @@ function gameOver(piece) {
 			return endGame(piece + ' wins', 'secondPlayerWins');
 		}
 	// a draw?
-	} else if (tic.emptySquares.checkEmpty().length === 0) {
+	} else if (tic.emptySquares.check().length === 0) {
 		return endGame('draw', 'draws');
 	}
 

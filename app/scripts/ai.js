@@ -3,7 +3,7 @@ function aiMove() {
 	// if forced contains any squares, if a win is forced, a winning square will be at index 0, otherwise a blocking square will be at index 0. (Win takes priority over block)
 	var forced = forcedMove('o').concat(forcedMove('x'))
 	// lazily choosing square
-	var square = forced[0] || aiTactical() || aiRandom(tic.emptySquares.checkEmpty().slice());
+	var square = forced[0] || aiTactical() || aiRandom(tic.emptySquares.check().slice());
 	// processing the chosen square
 	processMove(square, 'o');
 }
@@ -28,7 +28,7 @@ function forcedMove(piece) {
 		// getting the difference between the set and the players occupied squares
 		var diff =  _.difference(set, tic[piece].check())
 		// if the difference is one square and that square is empty . .
-		if (diff.length === 1 && tic.emptySquares.checkEmpty().indexOf(diff[0]) > -1) {
+		if (diff.length === 1 && tic.emptySquares.check().indexOf(diff[0]) > -1) {
 			// . . then add square to forced array
 			forced.push(diff[0])
 		}
@@ -86,18 +86,18 @@ function aiTactical() {
 		// rotate the squares
 		var convertedSquares = convertSequence(squares, false)
 		// intersect them with empty so we know for sure that we have only the available 'bad' squares. This is quite uggly, but necessary b/c _.intersection changes the order of the values in the array. NOT GOOD!! Uniq does not, so taking the _.uniq of concatting converted squares and _.intersection result keeps correct order
-		convertedSquares = _.uniq(convertedSquares.concat(_.intersection(tic.emptySquares.checkEmpty(), convertedSquares)));
+		convertedSquares = _.uniq(convertedSquares.concat(_.intersection(tic.emptySquares.check(), convertedSquares)));
 
 		// check if all possible moves are considered bad. Drop last one if so(which means AI will choose that square, since it is the weakest threat)--last square in squares is weakest and if any repeat squares appear, the repeats closest to the end of array will be removed, meaning that if the same square in a weaker sequence matches the same square in a stronger sequence, the weaker will be excluded from array leaving the stronger square in it's (strong) postion near front of array.(this exclusion happens _.uniq(squares) in orientMatches) Comprende?  
 		
 		// remove the squares from the empty squares to give AI the list of 'safe' squares
-		if (_.difference(tic.emptySquares.checkEmpty(), convertedSquares).length === 0) {
+		if (_.difference(tic.emptySquares.check(), convertedSquares).length === 0) {
 			// no safe squares, so drop the last square
 			convertedSquares.pop();
 		}
 
 		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
-		return aiRandom(_.difference(tic.emptySquares.checkEmpty(), convertedSquares))
+		return aiRandom(_.difference(tic.emptySquares.check(), convertedSquares))
 	}
 
 	// no matches
@@ -224,5 +224,5 @@ function processSquares(squares) {
 	console.log('squares after orientation: ', squares)
 
 	// intersects the related square(s) with the currently empty squares to find the availabe winning squares and lets ai choose randomly from that list.
-	return aiRandom(_.intersection(tic.emptySquares.checkEmpty(), convertSequence(squares, false)))
+	return aiRandom(_.intersection(tic.emptySquares.check(), convertSequence(squares, false)))
 }

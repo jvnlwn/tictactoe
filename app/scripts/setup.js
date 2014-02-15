@@ -36,7 +36,7 @@ function emptySquares() {
 	var emptySquares = [1,2,3,4,5,6,7,8,9];
 
 	return {
-		checkSquare: function(square) {
+		empty: function(square) {
 			var index = emptySquares.indexOf(square);
 
 			if (index > -1) {
@@ -50,7 +50,7 @@ function emptySquares() {
 			emptySquares.splice(index, 1);
 		},
 
-		checkEmpty: function() {
+		check: function() {
 			return emptySquares;
 		}
  	}

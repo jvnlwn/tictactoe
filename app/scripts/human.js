@@ -4,7 +4,7 @@ function huMove() {
 
 		var square = parseInt($(this).attr('id'));
 
-		if (tic.emptySquares.checkSquare(square) && !tic.gameOver) {
+		if (tic.emptySquares.empty(square) && !tic.gameOver) {
 
 			processMove(square, 'x');
 
