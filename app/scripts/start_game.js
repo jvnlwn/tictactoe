@@ -16,6 +16,7 @@ function startNewGame() {
 		$('.square').html('');
 		$('.winner').html('');
 
+		// changes order of which player goes first
 		tic.player.switchOrder();
 
 		// arrange and orient sequences

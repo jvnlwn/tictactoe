@@ -92,7 +92,7 @@ function allSequences(player) {
 		add: function(item) {
 			// keep track of which list the current sequence was added to
 			addedTo = true;
-			var sequence = findMatch(sequences, item, 0, [], item.length);
+			var sequence = findMatch(sequences, item);
 
 			if (sequence.length > 0) {
 				// should only ever be one object inside sequence. All duplicate sequences have a frequency property that is incremented on each occurence

@@ -37,59 +37,50 @@ function forcedMove(piece) {
 	return forced;
 }
 
+// AI searches for a winning, drawing, or losing sequence that matches the current sequence
 function aiTactical() {
-	var matches = [];
-
 	// convert current sequence to the normal rotation ([1,2,3,4,5,6,7,8,9])
-	var convertedSequence = convertSequence(tic.sequence.check(), true);
-	var length = tic.sequence.check().length;
+	var convertedSequence = rotateSequence(tic.sequence.check(), true);
 
 	// check for matches, if none are found [] will be set as return value
-	var wins  = findMatch(determineSequences().wins, convertedSequence, 0, [], length);
-	var loss  = findMatch(determineSequences().loss, convertedSequence, 0, [], length);
-	var draws = findMatch(tic.draws.check(), convertedSequence, 0, [], length);
+	var wins  = findMatch(determineSequences().wins, convertedSequence);
+	var loss  = findMatch(determineSequences().loss, convertedSequence);
+	var draws = findMatch(tic.draws.check(), convertedSequence);
 
-	console.log(wins)
+	// lazily returning a winning square, drawing square, safe square, or undefined
+	return proVersesAnti(wins, loss) || proVersesAnti(draws, loss) || anti(loss);
+}
 
-	// ===================================
-	// 			   CHECK WINS
-	// ===================================
-	wins = proVSanti(wins, loss, length)
-	// if wins are present here, this either means that there were no mathing losing sequences found, or that there were matching losing sequnces but a stronger winning sequence was found 
-	if (wins.length > 0) {
-		console.log('we are choosing a winner')
-		// filters out weaker matches, gets squares from matching sequences and/or their mirrored counterparts, and returns squares to AI random
-		return processSquares(orientMactches(processMatches(wins)));
+// ========================
+// 		WINS && DRAWS
+// ========================
+// are there pro and anti sequences. If so, make decision based on which sequence is more successful
+function proVersesAnti(proMatches, antiMatches) {
+	if (proMatches.length > 0 && antiMatches.length > 0) {
+		// comparse proMatches matches to losing matches. If the sequences match, compares the success of the sequences. If proMatches sequence has more success, returns true; if even, compares force and returns true if proMatch is stronger; else checks next proMatches sequence. No proMatches sequence works? Returns empty array.
+		proMatches = compareMatches(proMatches, antiMatches, tic.sequence.check().length)
 	}
-
-
-	// ===================================
-	// 			  CHECK DRAWS
-	// ===================================
-	// comparing draws and loss sequences
-	draws = proVSanti(draws, loss, length)
-	// if draws are present here, this either means that there were no mathing losing sequences found, or that there were matching losing sequnces but a stronger drawing sequence was found 
-	if (draws.length > 0) {
-		console.log('we are pursuing a draw')
-		// filters out weaker matches, gets squares from matching sequences and/or their mirrored counterparts, and returns squares to AI random
-		return processSquares(orientMactches(processMatches(draws)))
+	// if no antiMatches, then simply return proMatches
+	if (proMatches.length > 0) {
+		// filterMatches discards weaker matches. orientMatches orients squares appropriately. processSquares chooses randomly from the appropriate squares.
+		return processSquares(orientMactches(filterMatches(proMatches)));
 	}
+	// otherwise returns undefined
+}
 
-	// ===================================
-	// 			   CHECK LOSS
-	// ===================================
-	// if losing sequences still present, avoid these squares
+// ========================
+// 			LOSS
+// ========================
+// if losing sequences present, avoid these squares
+function anti(loss) {
 	if (loss.length > 0) {
 		console.log('we are avoiding a loser')
 		// retrieves the appropriate squares from the matching sequences and/or their mirrored counterparts depending on the matching sequences' orientations
 		var squares = orientMactches(loss);
 		// rotate the squares
-		var convertedSquares = convertSequence(squares, false)
-		// intersect them with empty so we know for sure that we have only the available 'bad' squares. This is quite uggly, but necessary b/c _.intersection changes the order of the values in the array. NOT GOOD!! Uniq does not, so taking the _.uniq of concatting converted squares and _.intersection result keeps correct order
-		convertedSquares = _.uniq(convertedSquares.concat(_.intersection(tic.emptySquares.check(), convertedSquares)));
+		var convertedSquares = rotateSequence(squares, false)
 
-		// check if all possible moves are considered bad. Drop last one if so(which means AI will choose that square, since it is the weakest threat)--last square in squares is weakest and if any repeat squares appear, the repeats closest to the end of array will be removed, meaning that if the same square in a weaker sequence matches the same square in a stronger sequence, the weaker will be excluded from array leaving the stronger square in it's (strong) postion near front of array.(this exclusion happens _.uniq(squares) in orientMatches) Comprende?  
-		
+		// check if all possible moves are considered bad. Drop last one if so(which means AI will choose that square, since it is the weakest threat)--last square in squares is weakest and if any repeat squares appear, the repeats closest to the end of array will be removed, meaning that if the same square in a weaker sequence matches the same square in a stronger sequence, the weaker will be excluded from array leaving the stronger square in it's (strong) postion near front of array.(this exclusion happens _.uniq(squares) in orientMatches) Comprende?	
 		// remove the squares from the empty squares to give AI the list of 'safe' squares
 		if (_.difference(tic.emptySquares.check(), convertedSquares).length === 0) {
 			// no safe squares, so drop the last square
@@ -99,68 +90,47 @@ function aiTactical() {
 		// excludes the unsafe squares that are still empty and lets ai choose randomly from the resulting list of safe squares
 		return aiRandom(_.difference(tic.emptySquares.check(), convertedSquares))
 	}
-
-	// no matches
-	return false;
+	// otherwise returns undefined
 }
 
-// are there pro and anti sequences. If so, make decision based on which sequence is more successful
-function proVSanti(proMatches, antiMatches, length) {
-	if (proMatches.length > 0 && antiMatches.length > 0) {
-		// comparse proMatches matches to losing matches. If the sequences match, compares the success of the sequences. If proMatches sequence has more success, returns true; if even, compares force and returns true if proMatch is stronger; else checks next proMatches sequence. No proMatches sequence works? Returns empty array.
-		return compareMatches(proMatches, antiMatches, length, 0)
-	}
-	// if no antiMatches, then simply return proMatches
-	return proMatches;
-}
+// ========================
+// 	   COMPARE MATCHES
+// ========================
+// compare proMatches and antiMatches to determine whether or not proMatches contains a more successful/strong sequence
+function compareMatches(proMatches, antiMatches, length) {
 
-// determines wins and loss sequences based on who is first player
-function determineSequences() {
-	if (tic.player.check() === 'c') {
-		return {
-			wins: tic.firstPlayerWins.check(),
-			loss: tic.secondPlayerWins.check()		
-		}
-	} else {
-		return {
-			wins: tic.secondPlayerWins.check(),
-			loss: tic.firstPlayerWins.check()	
-		}
-	}
-}
-
-function compareMatches(matchesFirst, matchesSecond, length) {
-
-	// no mathces work
-	if (matchesFirst.length === 0) {
-		// matchesFirst is an empty array
-		return matchesFirst;
+	// no proMatches work
+	if (proMatches.length === 0) {
+		// proMatches is an empty array
+		return proMatches;
 	}
 
-	var match = findMatch(matchesSecond, _.first(matchesFirst).sequence, 0, [], length + 1)
+	// find all sequences in antiMatches that are same as the current sequence from proMatches being checked.
+	var matches = findMatch(antiMatches, _.first(proMatches).sequence, 0, [], length + 1)
 
-	// found a match?
-	if (match.length > 0) {
-		console.log('some evil is afoot:  ', _.first(matchesFirst).sequence[length] + ' same as ' + match[0].sequence[length])
-		console.log('compare the success: ', _.first(matchesFirst).success[length] + ' same as ' + match[0].success[length])
+	// found a matching sequences in antiMatches?
+	if (matches.length > 0) {
+		console.log('some evil is afoot:  ', _.first(proMatches).sequence[length] + ' same as ' + matches[0].sequence[length])
+		console.log('compare the success: ', _.first(proMatches).success[length] + ' same as ' + matches[0].success[length])
 		// compare the success of the two sequences. If not not greater, but even, compare the forces of the two sequences
-		if (_.first(matchesFirst).success[length] > match[0].success[length] || ((_.first(matchesFirst).success[length] === match[0].success[length]) && (_.first(matchesFirst).forced > match[0].forced))) {
-			console.log('force is strong in this one: ', _.first(matchesFirst).forced + ' vs '+ match[0].forced)
-			return matchesFirst;
+		if (_.first(proMatches).success[length] > matches[0].success[length] || ((_.first(proMatches).success[length] === matches[0].success[length]) && (_.first(proMatches).forced > matches[0].forced))) {
+			console.log('force is strong in this one: ', _.first(proMatches).forced + ' vs '+ matches[0].forced)
+			return proMatches;
 		} else {
 			// still weak, check next sequence if there is one
-			console.log('weak sauce: ', _.first(matchesFirst).forced + ' vs '+ match[0].forced)
-			return compareMatches(_.rest(matchesFirst), matchesSecond, length);
+			console.log('weak sauce: ', _.first(proMatches).forced + ' vs '+ matches[0].forced)
+			return compareMatches(_.rest(proMatches), antiMatches, length);
 		}
 
 	} else {
 		console.log('no evil here')
-		return matchesFirst;
+		// no antiMatches sequences found that match proMatches sequence
+		return proMatches;
 	}
 }
 
 // take a set of matches (i.e. wins or draws -- NOT loss) and filter out the weaker matches
-function processMatches(matches) {
+function filterMatches(matches) {
 	// get equally strong sequences to choose randomly from
 	return matches = _.filter(matches, function(match) {
 		return match.forced === matches[0].forced;
@@ -178,7 +148,6 @@ function orientMactches(matches) {
 		var index = tic.turn.check()
 		var square = match.sequence[index]
 
-		// squares.push(handleOrientaion(match.sequence[0], square))
 		console.log('oriented mirror: ', match.oriented.mirror)
 		console.log('oriented normal: ', match.oriented.normal)
 		console.log('index at:    ', index)
@@ -204,9 +173,10 @@ function orientMactches(matches) {
 			squares.push(square)
 		}
 
-		console.log('square(s) to choose from: ', convertSequence(_.uniq(squares), false))
+		console.log('square(s) to choose from: ', rotateSequence(_.uniq(squares), false))
 	})
 
+	// return _.uniq in case square and its orientation are the same square.
 	return _.uniq(squares);
 }
 
@@ -224,5 +194,21 @@ function processSquares(squares) {
 	console.log('squares after orientation: ', squares)
 
 	// intersects the related square(s) with the currently empty squares to find the availabe winning squares and lets ai choose randomly from that list.
-	return aiRandom(_.intersection(tic.emptySquares.check(), convertSequence(squares, false)))
+	return aiRandom(_.intersection(tic.emptySquares.check(), rotateSequence(squares, false)))
 }
+
+// determines wins and loss sequences based on who is first player
+function determineSequences() {
+	if (tic.player.check() === 'c') {
+		return {
+			wins: tic.firstPlayerWins.check(),
+			loss: tic.secondPlayerWins.check()		
+		}
+	} else {
+		return {
+			wins: tic.secondPlayerWins.check(),
+			loss: tic.firstPlayerWins.check()	
+		}
+	}
+}
+

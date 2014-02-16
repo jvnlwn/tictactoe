@@ -1,5 +1,5 @@
 // takes a sequence and rotates it. Direction can be true or false. True for converting current sequence to standard rotation. False for converting standard-rotated sequence to current rotation.
-function convertSequence(sequence, direction) {
+function rotateSequence(sequence, direction) {
 	var conversion = [];
 
 	_.each(sequence, function(square) {

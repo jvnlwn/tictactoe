@@ -1,7 +1,7 @@
 function findMatch(list, sequence, index, current, length) {
-	// index   = index   || 0;
-	// current = current || [];
-	// length  = length  || sequence.length;
+	index   = index   || 0;
+	current = current || [];
+	length  = length  || sequence.length;
 
 	if (sequence.length === 0 || list.length === 0 || index >= length) {
 		return list;
@@ -66,7 +66,7 @@ function stats(list, sequence, length, i) {
 		return
 	}
 
-	var matches = findMatch(list, convertSequence(sequence, true), i, [], i + 1);
+	var matches = findMatch(list, rotateSequence(sequence, true), i, [], i + 1);
 
 	var max = _.max(_.map(matches, function(match) {
 		return match.success[i] + 1;
