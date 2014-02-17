@@ -12,7 +12,8 @@ function setup() {
 				turn:          incrementInt(),
 				forced:        incrementInt(),
 				sequence:      currentSequence(),
-				rotation:      rotation(initiateRotation),
+				// rotation:      rotation(initiateRotation),
+				rotation:      rotation(),
 				x:             recordTakenSquares(),
 				o:             recordTakenSquares(),
 				gameOver:      false
@@ -164,7 +165,8 @@ function playerOrder() {
 }
 
 // 'rotates' the board based on the first square in the sequence (unless first square is middle, then rotation is based on second square)
-function rotation(pred) {
+// function rotation(pred) {
+function rotation() {
 	var rotation = [];
 
 	var rotations = [
@@ -183,16 +185,40 @@ function rotation(pred) {
 		{
 			squares:  [7,4],
 			rotation: [7,4,1,8,5,2,9,6,3]
-		}
+		},
+		// {
+		// 	squares:  [5],
+		// 	rotation: [1,2,1,2,5,2,1,2,1]
+		// }
 	]
+
+	// ????????????????????????????
 
 	return {
 		set: function(square) {
-			if (pred()) {
-				rotation = _.find(rotations, function(o){return o.squares.indexOf(square) > -1}).rotation
+			var sequence = tic.sequence.check();
+
+			if (sequence.length === 1 && sequence[0] === 5) {
+				rotation = rotations[Math.floor(Math.random() * 4)].rotation;
+			} else if ((sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)) {
+				rotation = _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation
 			}
 
+			// if (sequence.length === 1 && sequence[0] === 5) {
+			// 	rotation = rotations[Math.floor(Math.random() * 4)].rotation;
+			// } else if (sequence.length === 2 && sequence[0] === 5) {
+			// 	rotation = _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation
+			// }
+			console.log(rotation)
+
 		},
+
+		// set: function(square) {
+		// 	if (pred()) {
+		// 		rotation = _.find(rotations, function(o){return o.squares.indexOf(square) > -1}).rotation
+		// 	}
+
+		// },
 
 		check: function() {
 			return rotation;

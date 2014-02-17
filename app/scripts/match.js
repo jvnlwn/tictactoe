@@ -13,18 +13,12 @@ function findMatch(list, sequence, index, current, length) {
 		// if sequences aren't exactly the same, maybe they are a mirror of eachother -> check for orientation
 		if (item.sequence[index] === sequence[index] && item.oriented.mirror > index) {
 			// if oriented.normal is 10 (meaning the orientation has not been set)
-			var before = item.oriented.normal
 			if (item.oriented.normal === 10) {
 				item.oriented.normal = sequence[index] === handleOrientaion(item.sequence[0], item.sequence[index]) ? 10 : index;
-			}
-			var after = item.oriented.normal
-			if (before !== after) {
-				console.log('MIRROR GONE')
 			}
 			current.push(item)
 		} else if (handleOrientaion(item.sequence[0], item.sequence[index]) === sequence[index]) {
 			item.oriented.mirror = item.oriented.mirror === 10 ? index : item.oriented.mirror;
-			console.log('MIRROR IS -> ', item.oriented.mirror);
 			current.push(item)
 		}
 	})
@@ -44,8 +38,6 @@ function handleOrientaion(orientation, square) {
 		output: [3,2,1,6,5,4,9,8,7]
 	}
 
-	// if 5 is first, may need to check for that
-
 	// corner orientation
 	if ([1,3,7,9].indexOf(orientation) > -1) {
 		return corner.output[square - 1];
@@ -56,7 +48,18 @@ function handleOrientaion(orientation, square) {
 		return side.output[square - 1];
 	}
 
-	return 5;
+	// 5 will always have an oriented value of 5. It's always the middle.
+	if (square === 5) {
+		return 5;
+	}
+
+	// middle orientation for second move. Returns all sides or all corners.
+	if (tic.sequence.check().length === 1) {
+		return squareType(square);
+	}
+
+	// middle orientation afer second move. The orientation will be based off of the second move.
+	return handleOrientaion(tic.sequence.check()[1], square)
 }
 
 // determine sequence overall occurrences and success of those sequences

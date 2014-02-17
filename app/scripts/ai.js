@@ -173,11 +173,11 @@ function orientMactches(matches) {
 			squares.push(square)
 		}
 
-		console.log('square(s) to choose from: ', rotateSequence(_.uniq(squares), false))
+		console.log('square(s) to choose from: ', rotateSequence(_.uniq(_.flatten(squares)), false))
 	})
 
 	// return _.uniq in case square and its orientation are the same square.
-	return _.uniq(squares);
+	return _.uniq(_.flatten(squares));
 }
 
 // meant for processing wins and draws.
