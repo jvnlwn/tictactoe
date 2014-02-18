@@ -12,7 +12,6 @@ function setup() {
 				turn:          incrementInt(),
 				forced:        incrementInt(),
 				sequence:      currentSequence(),
-				// rotation:      rotation(initiateRotation),
 				rotation:      rotation(),
 				x:             recordTakenSquares(),
 				o:             recordTakenSquares(),
@@ -26,7 +25,7 @@ function setup() {
 		firstPlayerWins:       allSequences(),
 		secondPlayerWins:      allSequences(),
 		draws:                 allSequences(),
-		gamesPlayed:           incrementInt()
+		stats:                 gameStats()
 	}
 }
 
@@ -119,9 +118,8 @@ function allSequences(player) {
 			return this;
 		},
 
-		success: function(sequence) {
-
-			stats(sequences, sequence, sequence.length, 0)
+		updateStat: function(sequence, stat) {
+			stats(sequences, sequence, sequence.length, 0, stat)
 			
 			return this;
 		},
@@ -165,7 +163,6 @@ function playerOrder() {
 }
 
 // 'rotates' the board based on the first square in the sequence (unless first square is middle, then rotation is based on second square)
-// function rotation(pred) {
 function rotation() {
 	var rotation = [];
 
@@ -185,40 +182,18 @@ function rotation() {
 		{
 			squares:  [7,4],
 			rotation: [7,4,1,8,5,2,9,6,3]
-		},
-		// {
-		// 	squares:  [5],
-		// 	rotation: [1,2,1,2,5,2,1,2,1]
-		// }
+		}
 	]
-
-	// ????????????????????????????
 
 	return {
 		set: function(square) {
 			var sequence = tic.sequence.check();
 
-			if (sequence.length === 1 && sequence[0] === 5) {
-				rotation = rotations[Math.floor(Math.random() * 4)].rotation;
-			} else if ((sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)) {
-				rotation = _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation
+			if (sequence.length === 1) {
+				// if first square is 5, rotate randomly, else rotate accordingly based on first square
+				rotation = sequence[0] === 5 ? rotations[Math.floor(Math.random() * 4)].rotation : _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation;
 			}
-
-			// if (sequence.length === 1 && sequence[0] === 5) {
-			// 	rotation = rotations[Math.floor(Math.random() * 4)].rotation;
-			// } else if (sequence.length === 2 && sequence[0] === 5) {
-			// 	rotation = _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation
-			// }
-			console.log(rotation)
-
 		},
-
-		// set: function(square) {
-		// 	if (pred()) {
-		// 		rotation = _.find(rotations, function(o){return o.squares.indexOf(square) > -1}).rotation
-		// 	}
-
-		// },
 
 		check: function() {
 			return rotation;
@@ -226,16 +201,15 @@ function rotation() {
 	}
 }
 
-// the pred for rotation
-function initiateRotation() {
-	var sequence = tic.sequence.check()
-	return (sequence.length === 1 && sequence[0] !== 5) || (sequence.length === 2 && sequence[0] === 5)
-}
-
 function recordTakenSquares() {
 	var takenSquares = [];
+	var wins = incrementInt();
 
 	return {
+		win: function(action) {
+			return wins[action]();
+		},
+
 		add: function(square) {
 			takenSquares.push(square)
 		},
@@ -245,3 +219,24 @@ function recordTakenSquares() {
 		}
 	}
 }
+
+// keep track of game stats
+function gameStats() {
+	var stats = {
+		gamesPlayed : incrementInt(),
+		xWins       : incrementInt(),
+		oWins       : incrementInt(),
+		draw        : incrementInt()
+	}
+
+	return {
+		update: function(stat) {
+			stats[stat].increment();
+		},
+
+		check: function(stat) {
+			return stats[stat].check();
+		}
+	}
+}
+

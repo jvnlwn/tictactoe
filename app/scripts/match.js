@@ -63,7 +63,7 @@ function handleOrientaion(orientation, square) {
 }
 
 // determine sequence overall occurrences and success of those sequences
-function stats(list, sequence, length, i) {
+function stats(list, sequence, length, i, stat) {
 
 	if (i >= length) {
 		return
@@ -72,12 +72,12 @@ function stats(list, sequence, length, i) {
 	var matches = findMatch(list, rotateSequence(sequence, true), i, [], i + 1);
 
 	var max = _.max(_.map(matches, function(match) {
-		return match.success[i] + 1;
+		return match[stat][i] + 1;
 	}))
 
 	_.each(matches, function(match) {
-		match.success[i] = max;
+		match[stat][i] = max;
 	})
 
-	return stats(matches, sequence, length, i + 1);
+	return stats(matches, sequence, length, i + 1, stat);
 }

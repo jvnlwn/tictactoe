@@ -3,9 +3,9 @@ function gameOver(piece) {
 	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
 		// records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
 		if (tic.turn.check() % 2 === 0) {
-			return endGame(piece + ' wins', 'firstPlayerWins');
+			return endGame(piece + ' Wins', 'firstPlayerWins');
 		} else {
-			return endGame(piece + ' wins', 'secondPlayerWins');
+			return endGame(piece + ' Wins', 'secondPlayerWins');
 		}
 	// a draw?
 	} else if (tic.emptySquares.check().length === 0) {
@@ -25,12 +25,27 @@ function endGame(text, sequence) {
 	// game is over
 	tic.gameOver = true;
 	// number of games played ++
-	tic.gamesPlayed.increment();
+	tic.stats.update('gamesPlayed');
+	// update stats
+	tic.stats.update(text.split(' ').join(''))
+	// reflect stats in DOM
+	statsInDOM()
 	// display winner in DOM
 	$('.winner').text(text.toUpperCase() + '!');
 
 	// adding the final sequence to the appropriate list and ranks the success of each position in each sequence
-	tic[sequence].add(rotateSequence(tic.sequence.check(), true)).success(tic.sequence.check());
+	tic[sequence].add(rotateSequence(tic.sequence.check(), true)).updateStat(tic.sequence.check(), 'success');
+	// update the overall occurance of each square in all sequences
+	tic.firstPlayerWins.updateStat(tic.sequence.check(), 'overall');
+	tic.secondPlayerWins.updateStat(tic.sequence.check(), 'overall');
+	tic.draws.updateStat(tic.sequence.check(), 'overall');
+}
+
+// display stats in the DOM
+function statsInDOM() {
+	$('#wins').text(tic.stats.check('xWins'))
+	$('#loss').text(tic.stats.check('oWins'))
+	$('#draws').text(tic.stats.check('draw'))
 }
 
 // game over ^^
