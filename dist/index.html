@@ -1,13 +1,23 @@
-<!DOCTYPE html><!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]--><!--[if gt IE 8]><!--><html class=no-js><!--<![endif]--><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>tictactoe</title><meta name=description content=""><meta name=viewport content="width=device-width"><!-- Place favicon.ico and apple-touch-icon.png in the root directory --><link rel=stylesheet href=styles/vendor.css><link rel=stylesheet href=styles/01fc7608.main.css><body><!--[if lt IE 10]>
+<!DOCTYPE html><!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--><!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]--><!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]--><!--[if gt IE 8]><!--><html class=no-js><!--<![endif]--><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>tictactoe</title><meta name=description content=""><meta name=viewport content="width=device-width"><!-- Place favicon.ico and apple-touch-icon.png in the root directory --><link rel=stylesheet href=styles/vendor.css><link rel=stylesheet href=styles/17051631.main.css><body><!--[if lt IE 10]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]--><div class=wrapper><div class=winner></div><div class=board><div class=square id=1></div><div class=square id=2></div><div class=square id=3></div><div class=square id=4></div><div class=square id=5></div><div class=square id=6></div><div class=square id=7></div><div class=square id=8></div><div class=square id=9></div></div><div class=new-game>New Game</div></div><script type=text/template id=x><div class="x x-container">
-                <div class="x-arrow-up"></div>
-                <div class="x-arrow-down"></div>
-                <div class="x-arrow-left"></div>
-                <div class="x-arrow-right"></div>
-            </div></script><script type=text/template id=o><div class="o"></div></script><script src=scripts/a0be09aa.vendor.js></script><!-- Google Analytics: change UA-XXXXX-X to be your site's ID. --><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+        <![endif]--><div class=wrapper><div class=winner></div><div class=ratio><span id=wins>0</span>-<span id=loss>0</span>-<span id=draws>0</span></div><div class=lg-board><div class="square lg-square-border" id=1></div><div class="square lg-square-border" id=2></div><div class="square lg-square-border" id=3></div><div class="square lg-square-border" id=4></div><div class="square lg-square-border" id=5></div><div class="square lg-square-border" id=6></div><div class="square lg-square-border" id=7></div><div class="square lg-square-border" id=8></div><div class="square lg-square-border" id=9></div></div><div class=sm-boards><!-- small boards go here --></div><div><span class=new-game>New Game</span></div></div><!-- large x --><script type=text/template id=lg-x><img class="lg-x" src="images/8a1449dd.x.png"></script><!-- small x --><script type=text/template id=sm-x><img class="sm-x" src="images/8a1449dd.x.png"></script><!-- large o --><script type=text/template id=lg-o><img class="lg-o" src="images/3af48759.o.png"></script><!-- small o --><script type=text/template id=sm-o><img class="sm-o" src="images/3af48759.o.png"></script><!-- small board --><script type=text/template id=sm-board><div class="sm-board-container">
+                <span class="sm-board-name"><%= _id.split('-').join(' ').toString() %></span>
+                <div class="sm-board" id="<%= _id %>">
+                    <div class="square sm-square-border 1"></div>
+                    <div class="square sm-square-border 2"></div>
+                    <div class="square sm-square-border 3"></div>
+
+                    <div class="square sm-square-border 4"></div>
+                    <div class="square sm-square-border 5"></div>
+                    <div class="square sm-square-border 6"></div>
+
+                    <div class="square sm-square-border 7"></div>
+                    <div class="square sm-square-border 8"></div>
+                    <div class="square sm-square-border 9"></div>
+                </div>
+            </div></script><script src=scripts/a0be09aa.vendor.js></script><!-- Google Analytics: change UA-XXXXX-X to be your site's ID. --><script>(function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
             function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
             e=o.createElement(i);r=o.getElementsByTagName(i)[0];
             e.src='//www.google-analytics.com/analytics.js';
             r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-            ga('create','UA-XXXXX-X');ga('send','pageview');</script><script src=scripts/acc48273.main.js></script>
+            ga('create','UA-XXXXX-X');ga('send','pageview');</script><script src=scripts/f9b2473b.main.js></script>
