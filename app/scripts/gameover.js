@@ -1,6 +1,6 @@
 function gameOver(piece) {
 	// a win?
-	if (checkForThree(tic.setsOfThree, 0, 0, piece)) {
+	if (checkForThree(piece)) {
 		// records sequence of moves as a win or draw for first or second player and converts that sequence to a normal rotation
 		if (tic.turn.check() % 2 === 0) {
 			return endGame(piece + ' Wins', 'firstPlayerWins');
@@ -31,6 +31,7 @@ function endGame(text, sequence) {
 	// reflect stats in DOM
 	statsInDOM()
 	// display winner in DOM
+	console.log('winner should be: ', text)
 	$('.winner').text(text.toUpperCase() + '!');
 
 	// adding the final sequence to the appropriate list and ranks the success of each position in each sequence
@@ -50,24 +51,20 @@ function statsInDOM() {
 
 // game over ^^
 
-function checkForThree(allSets, set, order, piece) {
+// checking for three in a row using same principle from forced function
+function checkForThree(piece) {
+	var threeInARow = false;
 
-	if (order === 3) {
-		// console.log('MATCH')
-		return true;
-	}
+	// looping over each possible set of three
+	_.each(tic.setsOfThree, function(set){
+		// getting the difference between the set and the players occupied squares
+		var diff =  _.difference(set, tic[piece].check())
+		// if the difference is 0
+		if (diff.length === 0) {
+			// . . then a set of three in a row has found been 
+			threeInARow = true;
+		}
+	})
 
-	if (set >= allSets.length) {
-		// console.log('NO GOOD')
-		return false;
-	}
-
-	var square = allSets[set][order]
-
-	if ($('#' + square).children().hasClass(piece)) {
-		// console.log('match',set,order)
-		return checkForThree(allSets, set, order + 1, piece)
-	} else {
-		return checkForThree(allSets, set + 1, 0, piece)
-	}
+	return threeInARow;
 }
