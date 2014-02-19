@@ -1,21 +1,10 @@
-$x-container-base-size: 22px;
-$x-container-additional-size: 50px;
-$x-container-total-size: $x-container-base-size + $x-container-additional-size;
-
-$arrow-base-size: 9px;
-$arrow-additional-size: $x-container-additional-size / 2;
-$arrow-size: $arrow-base-size + $arrow-additional-size;
-
-
-$board-background: rgb(209, 209, 209);
-$board-grid-color: #000;
-$piece-color: #000;
-
+$board-grid-color: rgb(90, 90, 90);
 
 body {
     background: #fafafa;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #333;
+    color: rgb(90, 90, 90);
+    background: rgb(18, 18, 18);;
 }
 
 * {
@@ -23,22 +12,25 @@ body {
 }
 
 .wrapper {
-    width: 3000px;
+    width: 960px;
     margin: 0 auto;
 
-    .board {
-        width: 310px;
-        height: 310px;
+    .lg-board {
+        width: 410px;
+        height: 410px;
+        display: inline-block;
+    }
+
+    .sm-board {
+        width: 100px;
+        height: 100px;
         display: inline-block;
     }
 
     .square {
         width: 32%;
         height: 32%;
-        // width: 100px;
-        // height: 100px;
         float: left;
-        background: $board-background;
 
         &:nth-child(3n+3) {
             border-right: none;
@@ -49,23 +41,34 @@ body {
         }
     }
 
-    .large-square-boarder {
+    .lg-square-border {
         border-right: 5px solid $board-grid-color;
         border-bottom: 5px solid $board-grid-color;
     }
 
-    .small-square-boarder {
+    .sm-square-border {
         border-right: 2px solid $board-grid-color;
         border-bottom: 2px solid $board-grid-color;
     }
 
-    .o {
-        height: 70px;
-        width: 70px;
-        border-radius: 50%;
-        background: $board-background;
-        border: 3px solid $piece-color;
-        margin: 14px auto 0;
+    .lg-o {
+        width: 80%;
+        margin: 10% 0 0 10%;
+    }
+
+    .sm-o {
+        width: 80%;
+        margin: 10% 0 0 10%;  
+    }
+
+    .lg-x {
+        width: 76%;
+        margin: 12% 0 0 12%;  
+    }
+
+    .sm-x {
+        width: 76%;
+        margin: 12% 0 0 12%;  
     }
 
     .winner {
@@ -90,61 +93,9 @@ body {
     }
 
     .ai {
-        // width: 400px;
-        // height: 400px;
+        width: 30%;
         display: inline-block;
 
-        #comparing-sequence, #current-sequence {
-            display: inline-block;
-        }
-    }
-}
-
-
-.x-container {
-    position: relative;
-    width: $x-container-total-size;
-    height: $x-container-total-size;
-    background: $piece-color;
-    margin: 16px auto 0;
-
-    .x-arrow-up, .x-arrow-down, .x-arrow-left, .x-arrow-right {
-        position: absolute;
-        width: 0;
-        height: 0;
-    }
-
-    .x-arrow-up, .x-arrow-down {
-        border-left: $arrow-size solid rgba(0, 0, 0, 0);
-        border-right: $arrow-size solid rgba(0, 0, 0, 0);
-    }
-
-    .x-arrow-left, .x-arrow-right {
-        border-top:    $arrow-size solid rgba(0, 0, 0, 0);
-        border-bottom: $arrow-size solid rgba(0, 0, 0, 0);
-    }
-
-    .x-arrow-up {
-        bottom: 0;
-        left: 2px;
-        border-bottom: $arrow-size solid $board-background;
-    }
-
-    .x-arrow-down {
-        top: 0;
-        left: 2px;
-        border-top: $arrow-size solid $board-background;
-    }
-
-    .x-arrow-left {
-        right: 0;
-        top: 2px;
-        border-right: $arrow-size solid $board-background;
-    }
-
-    .x-arrow-right {
-        left: 0;
-        top: 2px;
-        border-left: $arrow-size solid $board-background;
+        
     }
 }

@@ -1,4 +1,5 @@
 $(function() {
+	dOMinate();
     // set click events for person
     huMove();
 

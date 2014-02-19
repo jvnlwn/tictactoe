@@ -33,7 +33,7 @@ function updateBoards() {
 }
 
 function putInDOM(square, id) {
-	$('#' + id).find('.' + square).append(determineTemplate(whatPiece()));
+	$('#' + id).find('.' + square).append(determineTemplate('sm-' + whatPiece()));
 }
 
 // determine what piece to append
@@ -50,3 +50,21 @@ function whatPiece() {
 
 	return piece;
 }
+
+// put the boards in the DOM
+function dOMinate() {
+	var boardIds = ['rotated-normal', 'oriented-normal', 'rotated-90', 'oriented-90', 'rotated-180', 'oriented-180', 'rotated-270', 'oriented-270'];
+	// var boardIds = ['rotated-180', 'rotated-270', 'rotated-90', 'rotated-normal', 'oriented-180', 'oriented-270', 'oriented-90', 'oriented-normal'];
+
+	var boardTemplate = _.template($('#sm-board').text());
+	_.each(boardIds, function(id) {
+		$('.ai').append(boardTemplate({ _id: id }));
+	})
+}
+
+
+
+
+
+
+
