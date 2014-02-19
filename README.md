@@ -3,7 +3,7 @@
 
 ### Overview
 
-The computer will "learn" to play tictactoe against a human opponent based on how the person plays. The person begins the game. If he/she wins, the sequence is recorded as a winning sequence for the first player. If he/she loses, the sequence is recorded as a winning sequence for the second player. When a draw is recorded, the player order is not considered. 
+The computer will "learn" to play tictactoe against a human opponent based on how the person plays. The person begins the game. If he/she wins, the sequence is recorded as a winning sequence for the first player. If he/she loses, the sequence is recorded as a winning sequence for the second player. When a draw is recorded, the player order is not considered. The computer will use these sequences to make the best educated moves.
 
 The computer will choose a square based on this lazy progression:
 
@@ -41,3 +41,32 @@ The computer has no acceptable winning or drawing sequences and must attempt to 
 
 6. ######Random Choice.
 The computer has no alternative other than to choose randomly from the available squares.
+
+### Handling Rotation
+As alluded to before, the tictactoe board can be rotated 90, 180, and 270 degrees and look the same as it did before being rotated. I stumbled upon a nice way to correlate the rotation of the board. I decided a normally rotated board (not rotated) would be represented by the array `[1, 2, 3, 4, 5, 6, 7, 8, 9]`. Each number corresponds to a square on the board:
+
+	1 2 3
+	4 5 6
+	7 8 9
+	
+Rotate that 90, 180, and 270 degrees and you get:
+
+	7 4 1   9 8 7    3 6 9
+	8 5 2   6 5 4    2 5 8
+	9 6 3   3 2 1    1 4 7
+	
+And now you can see how the rotations relate to each other:
+
+	0   -> [1, 2, 3, 4, 5, 6, 7, 8, 9]
+	90  -> [3, 6, 9, 2, 5, 8, 1, 4, 7]
+	180 -> [9, 8, 7, 6, 5, 4, 3, 2, 1]
+	270 -> [7, 4, 1, 8, 5, 2, 9, 6, 3]
+	
+When the board is not rotated, square 1 corresponds to square 1. When the board is rotated 90 degrees, square 3 corresponds to square 1 and so on.
+
+So, the sequence `[1, 4, 3, 2, 9, 5, 6]`, can be rotated to get 3 other sequences:
+
+	0   -> [1, 4, 3, 2, 9, 5, 6]	
+	90  -> [3, 2, 9, 6, 7, 5, 8]
+	180 -> [9, 6, 7, 8, 1, 5, 4]
+	270 -> [7, 8, 1, 4, 3, 5, 2]
