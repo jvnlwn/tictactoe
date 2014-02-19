@@ -44,7 +44,7 @@
             </div>
 
 
-            <div class="ai">
+            <div class="sm-boards">
                 <!-- small boards go here -->
             </div>
 
@@ -75,20 +75,23 @@
             <img class="sm-o" src="images/o.png">
         </script>
 
-        <!-- <span class="board-name"><%= _id %></span> -->
+        <!-- small board -->
         <script type="text/template" id="sm-board">
-            <div class="sm-board" id="<%= _id %>">
-                <div class="square sm-square-border 1"></div>
-                <div class="square sm-square-border 2"></div>
-                <div class="square sm-square-border 3"></div>
+            <div class="sm-board-container">
+                <span class="sm-board-name"><%= _id.split('-').join(' ').toString() %></span>
+                <div class="sm-board" id="<%= _id %>">
+                    <div class="square sm-square-border 1"></div>
+                    <div class="square sm-square-border 2"></div>
+                    <div class="square sm-square-border 3"></div>
 
-                <div class="square sm-square-border 4"></div>
-                <div class="square sm-square-border 5"></div>
-                <div class="square sm-square-border 6"></div>
+                    <div class="square sm-square-border 4"></div>
+                    <div class="square sm-square-border 5"></div>
+                    <div class="square sm-square-border 6"></div>
 
-                <div class="square sm-square-border 7"></div>
-                <div class="square sm-square-border 8"></div>
-                <div class="square sm-square-border 9"></div>
+                    <div class="square sm-square-border 7"></div>
+                    <div class="square sm-square-border 8"></div>
+                    <div class="square sm-square-border 9"></div>
+                </div>
             </div>
         </script>
 

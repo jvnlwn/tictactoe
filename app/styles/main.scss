@@ -4,7 +4,7 @@ body {
     background: #fafafa;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: rgb(90, 90, 90);
-    background: rgb(18, 18, 18);;
+    background: rgb(18, 18, 18);
 }
 
 * {
@@ -18,13 +18,19 @@ body {
     .lg-board {
         width: 410px;
         height: 410px;
+        margin-right: 45px;
         display: inline-block;
     }
 
     .sm-board {
         width: 100px;
         height: 100px;
+        margin: 0 10px 15px;
         display: inline-block;
+
+        &:nth-child(4n) {
+            margin-right: 0;
+        }
     }
 
     .square {
@@ -80,22 +86,35 @@ body {
     }
 
     .new-game {
-        color: #FFF;
         font-size: 18px;
         padding: 10px 15px;
-        background: rgb(93, 119, 218);
+        background: rgb(18, 18, 18);
         display: inline-block;
         border-radius: 4px;
-        text-shadow: 1px 1px rgb(60, 60, 148);
-        border: 3px solid rgb(60, 60, 148);
+        text-shadow: 1px 1px #000;
+        border: 3px solid rgb(123, 95, 0);
         margin-top: 20px;
         cursor: pointer;
+
+        &:hover {
+            border-color: rgb(191, 147, 0);
+        }
     }
 
-    .ai {
-        width: 30%;
+    .sm-boards {
+        width: 52%;
+        float: right;
         display: inline-block;
 
-        
+        .sm-board-name {
+            margin-bottom: 15px;
+            line-height: 10px;
+            text-align: center;
+            display: block;
+        }
+
+        .sm-board-container {
+            display: inline-block;
+        }
     }
 }

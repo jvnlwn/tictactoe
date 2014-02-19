@@ -1,10 +1,11 @@
 $(function() {
+	// putting small boards in the DOM
 	dOMinate();
     // set click events for person
     huMove();
 
     // sets/resets data from one game to the next
-    startNewGame()
+    startNewGame();
 });
 
 function startNewGame() {

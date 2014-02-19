@@ -53,12 +53,11 @@ function whatPiece() {
 
 // put the boards in the DOM
 function dOMinate() {
-	var boardIds = ['rotated-normal', 'oriented-normal', 'rotated-90', 'oriented-90', 'rotated-180', 'oriented-180', 'rotated-270', 'oriented-270'];
-	// var boardIds = ['rotated-180', 'rotated-270', 'rotated-90', 'rotated-normal', 'oriented-180', 'oriented-270', 'oriented-90', 'oriented-normal'];
-
+	var boardIds = ['rotated-normal', 'rotated-90', 'rotated-180', 'rotated-270', 'oriented-normal', 'oriented-90', 'oriented-180', 'oriented-270'];
 	var boardTemplate = _.template($('#sm-board').text());
+	
 	_.each(boardIds, function(id) {
-		$('.ai').append(boardTemplate({ _id: id }));
+		$('.sm-boards').append(boardTemplate({ _id: id }));
 	})
 }
 
