@@ -161,12 +161,12 @@ function orientMactches(matches) {
 		// in this case, an orientation has not been set yet. Therefore, supply AI with both the normal and mirror orientations to choose from
 		if (match.oriented.mirror > index && match.oriented.normal > index) {
 			console.log('this is when we allow for orientation swap')
-			squares.push(handleOrientaion(match.sequence[0], square), square)
+			squares.push(handleOrientation(match.sequence[0], square), square)
 
 			// this means orientation has been set to mirror and therefore all AI choices must be oriented as a mirror of the matching sequence
 		} else if (match.oriented.mirror < index) {
 			console.log('orientation is permanently mirror')
-			squares.push(handleOrientaion(match.sequence[0], square))
+			squares.push(handleOrientation(match.sequence[0], square))
 
 			// this means orientation is not set to mirror but set to normal and all AI choices must be oriented normally, as they appear in the matching sequence
 		} else {

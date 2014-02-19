@@ -18,17 +18,27 @@ body {
     color: #333;
 }
 
+* {
+    vertical-align: top;
+}
+
 .wrapper {
-    width: 310px;
+    width: 3000px;
     margin: 0 auto;
 
+    .board {
+        width: 310px;
+        height: 310px;
+        display: inline-block;
+    }
+
     .square {
-        width: 100px;
-        height: 100px;
+        width: 32%;
+        height: 32%;
+        // width: 100px;
+        // height: 100px;
         float: left;
         background: $board-background;
-        border-right: 5px solid $board-grid-color;
-        border-bottom: 5px solid $board-grid-color;
 
         &:nth-child(3n+3) {
             border-right: none;
@@ -37,6 +47,16 @@ body {
         &:nth-child(7), &:nth-child(8), &:nth-child(9) {
             border-bottom: none;
         }
+    }
+
+    .large-square-boarder {
+        border-right: 5px solid $board-grid-color;
+        border-bottom: 5px solid $board-grid-color;
+    }
+
+    .small-square-boarder {
+        border-right: 2px solid $board-grid-color;
+        border-bottom: 2px solid $board-grid-color;
     }
 
     .o {
@@ -67,6 +87,16 @@ body {
         border: 3px solid rgb(60, 60, 148);
         margin-top: 20px;
         cursor: pointer;
+    }
+
+    .ai {
+        // width: 400px;
+        // height: 400px;
+        display: inline-block;
+
+        #comparing-sequence, #current-sequence {
+            display: inline-block;
+        }
     }
 }
 

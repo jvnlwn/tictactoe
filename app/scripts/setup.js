@@ -189,9 +189,33 @@ function rotation() {
 		set: function(square) {
 			var sequence = tic.sequence.check();
 
-			if (sequence.length === 1) {
+			// if (sequence.length === 1) {
+			// 	// if first square is 5, rotate randomly, else rotate accordingly based on first square
+			// 	rotation = sequence[0] === 5 ? rotations[Math.floor(Math.random() * 4)].rotation : _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation;
+			// }
+		},
+
+		set: function(square) {
+			var sequence = tic.sequence.check();
+			// if (sequence.length === 1 && sequence[0] === 5) {
+			// 	rotations[Math.floor(Math.random() * 4)].rotation
+			// } else {
+			// 	_.find(rotations, function(o){ return o.squares.indexOf(sequence[0]) > -1 }).rotation
+			// }
+
+			if (sequence.length === 1 && sequence[0] === 5) {
 				// if first square is 5, rotate randomly, else rotate accordingly based on first square
-				rotation = sequence[0] === 5 ? rotations[Math.floor(Math.random() * 4)].rotation : _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation;
+				rotation = rotations[Math.floor(Math.random() * 4)].rotation;
+			} else if (sequence.length > 1 && sequence[0] === 5) {
+				rotation = _.find(rotations, function(o){ return o.squares.indexOf(sequence[1]) > -1 }).rotation
+			} else {
+				rotation = _.find(rotations, function(o){ return o.squares.indexOf(sequence[0]) > -1 }).rotation
+			}
+		},
+
+		setManually: function(square) {
+			if (tic.sequence.check()[0] !== 5) {
+				rotation = _.find(rotations, function(o){ return o.squares.indexOf(square) > -1 }).rotation	
 			}
 		},
 
@@ -203,13 +227,8 @@ function rotation() {
 
 function recordTakenSquares() {
 	var takenSquares = [];
-	var wins = incrementInt();
 
 	return {
-		win: function(action) {
-			return wins[action]();
-		},
-
 		add: function(square) {
 			takenSquares.push(square)
 		},
