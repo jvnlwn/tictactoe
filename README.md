@@ -23,7 +23,7 @@ Eventually the computer will become unbeatable.
 ### The Lazy Progression
 The computer will perform the first action in this list that is possible.
 
-1. ######Can It Win?
+1. Can It Win?
 The computer will win if when has 2 in a row.
 2. ######Can It Block a Win?
 The computer will block when its opponent has 2 in a row.
