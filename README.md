@@ -23,10 +23,12 @@ Eventually the computer will become unbeatable.
 ### The Lazy Progression
 The computer will perform the first action in this list that is possible.
 
-1. Can It Win?
+1. ######Can It Win?
 The computer will win if when has 2 in a row.
+
 2. ######Can It Block a Win?
 The computer will block when its opponent has 2 in a row.
+
 3. ######Can It Pursue a Win?
 The computer will look for any winning and losing sequences that match the current sequence. If it finds both winning and losing sequences that match the current sequence, it will compare the winning and losing sequences. It compares the next move in these sequences looking for an exact match. If an exact match is found, it must compare the success score of the sequence progression. (i.e. winning sequence [1,2,3, . . .] has a success of [3,1,1] and losing sequence [1,2,3, . . .] has a success of [3,2,2]. The matching next move is 3 and the success is 1 > 2 ? FALSE. The winning sequence is less succesful and must be passed over.) There is an extra comparison in case of a tie that isn't worth mentioning.
 In the event that only winning sequences are found, the computer simply chooses the next move in the best winning sequence.
