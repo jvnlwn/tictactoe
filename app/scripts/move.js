@@ -1,7 +1,5 @@
 // processing to be performed after square is chosen by human or computer
 function processMove(square, piece) {
-	$('#current-sequence').find('.' + square).append(determineTemplate(piece))
-
 	// display piece in the chosen square
 	appendPiece('#' + square, determineTemplate(piece));
 	// remove chosen square from empty squares array
@@ -12,8 +10,9 @@ function processMove(square, piece) {
 	tic.rotation.set(square);
 	// add chosen square to piece's squares array
 	tic[piece].add(square);
+	// updating the extra boards
+	updateBoards()
 	// check if the game is over
-	what()
 	gameOver(piece);
 	console.log('turn is: ', tic.turn.check())
 }
